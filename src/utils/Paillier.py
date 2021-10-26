@@ -3,6 +3,8 @@
 from textwrap import wrap
 from typing import List
 
+from utils.utils import lcm
+
 # Get the inverse modulo of e mod toi
 def inverse_modulo(e: int, toi: int) -> int:
     k = 1
@@ -18,18 +20,6 @@ def L(x, n):
 def get_miu(g: int, lamda: int, n: int):
     x = (g ** lamda) % (n ** 2)
     return inverse_modulo(L(x, n), n)
-
-# Get the greatest common divisor of a and b
-def gcd(a: int, b: int) -> int:
-    if (b == 0):
-        return a
-    if (a < b):
-        return gcd(b, a)
-    return gcd(b, a % b)
-
-# Get the lowest common multiple
-def lcm(a: int, b: int) -> int:
-    return int(a * b / gcd(a, b))
 
 # Encrypt the ciphertext with Paillier Algorithm
 def paillier_encryption(m: int, g: int, n: int) -> int:

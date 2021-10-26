@@ -1,6 +1,9 @@
 # RSA Algorithm
+
 from textwrap import wrap
 from typing import List
+
+from utils.utils import pow_mod
 
 # Get the inverse modulo of e mod toi
 def inverse_modulo(e: int, toi: int) -> int:
@@ -10,14 +13,6 @@ def inverse_modulo(e: int, toi: int) -> int:
         k += 1
         val = (1 + (k * toi)) % e
     return int((1 + (k * toi)) / e)
-
-# Get the greatest common divisor of a and b
-def gcd(a: int, b: int) -> int:
-    if (b == 0):
-        return a
-    if (a < b):
-        return gcd(b, a)
-    return gcd(b, a % b)
 
 # Encrypt the ciphertext with RSA Algorithm
 def rsa_encryption(m: List[int], n: int, e: int) -> List[int]:
@@ -31,7 +26,7 @@ def rsa_encryption(m: List[int], n: int, e: int) -> List[int]:
 def rsa_decryption(c: List[int], n: int, d: int) -> List[int]:
     m = []
     for block in c:
-        mi = (block ** d) % n
+        mi = pow_mod(block, d, n)
         m.append(mi)
     return m
 
