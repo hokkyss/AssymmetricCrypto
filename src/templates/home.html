@@ -1,0 +1,58 @@
+{% extends "layout.html" %}
+{% block content %}
+  <article class="media content-section">
+      <div class="media-body">
+      <h2><a class="article-title" href="#">Asymmetric Encryption</a></h2>
+        <p class="article-content">
+          <form action="#", method="post">
+            <div class="key-container">
+                <div>
+                    <label><b>Public Key</b></label><br>
+                    <input type="file" id="public-key-file" name="public-key-file"><br><br>
+                    <label><b>Public Key</b></label><br>
+                    <input type="text" id="public-key" name="public-key"><br><br> 
+                </div>
+                <div>
+                    <label><b>Private Key</b></label><br>
+                    <input type="file" id="private-key-file" name="private-key-file"><br><br>
+                    <label><b>Private Key</b></label><br>
+                    <input type="text" id="private-key" name="private-key"><br><br>
+                </div>
+            </div>
+
+            <div class="key-container">
+                <div>
+                    <label><b>Cryptography Algorithm</b></label><br>
+                    <input type="radio" name="choice" value="RSA">
+                    <label>RSA</label><br>
+                    <input type="radio" name="choice" value="ElGamal">
+                    <label>ElGamal</label><br>
+                    <input type="radio" name="choice" value="Paillier">
+                    <label>Paillier</label><br>
+                    <input type="radio" name="choice" value="Elliptic Curve Cryptography">
+                    <label>Elliptic Curve Cryptography</label><br><br>
+                </div>
+                <div>
+                    <label><b>Mode</b></label><br>
+                    <input type="radio" name="mode" value="Encryption">
+                    <label>Encryption</label><br>
+                    <input type="radio" name="mode" value="Decryption">
+                    <label>Decryption</label><br>
+                </div>
+            </div>
+            <div>
+                <label><b>Input Box</b></label><br>
+                <textarea name="input-box" rows=5 class="text-area-box"></textarea><br><br>
+            </div>
+
+            <div>
+                <label><b>Result Box</b></label><br>
+                <textarea name="result-box" rows=5 class="text-area-box"></textarea><br><br>
+            </div>
+
+            <input type="submit" value="Extract"><br>
+          </form>
+        </p>
+      </div>
+    </article>
+{% endblock content %}
