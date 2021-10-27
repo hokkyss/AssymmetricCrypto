@@ -45,7 +45,7 @@ class StringEncoder:
     def encode(string: str) -> str:
         result = ""
         for c in string:
-            result = result.__add__(StringEncoder.__CHAR_MAP[c])
+            result = result + StringEncoder.__CHAR_MAP[c]
         return result
 
 def pow_mod(x: int, y: int, p: int) -> int:
