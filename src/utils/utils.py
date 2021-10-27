@@ -1,8 +1,52 @@
-def convert_to_asciis(string: str) -> str:
-    result = ""
-    for c in string:
-        result = result.__add__(str(int(c)))
-    return result
+from typing import ClassVar, Dict
+from typing_extensions import Final
+
+class StringEncoder:
+    __CHAR_MAP: Final[ClassVar[Dict[str, str]]] = {
+        "0": "00",
+        "1": "01",
+        "2": "02",
+        "3": "03",
+        "4": "04",
+        "5": "05",
+        "6": "06",
+        "7": "07",
+        "8": "08",
+        "9": "09",
+        "A": "10",
+        "B": "11",
+        "C": "12",
+        "D": "13",
+        "E": "14",
+        "F": "15",
+        "G": "16",
+        "H": "17",
+        "I": "18",
+        "J": "19",
+        "K": "20",
+        "L": "21",
+        "M": "22",
+        "N": "23",
+        "O": "24",
+        "P": "25",
+        "Q": "26",
+        "R": "27",
+        "S": "28",
+        "T": "29",
+        "U": "30",
+        "V": "31",
+        "W": "32",
+        "X": "33",
+        "Y": "34",
+        "Z": "35"
+    }
+
+    @staticmethod
+    def encode(string: str) -> str:
+        result = ""
+        for c in string:
+            result = result.__add__(StringEncoder.__CHAR_MAP[c])
+        return result
 
 def pow_mod(x: int, y: int, p: int) -> int:
     """
@@ -15,7 +59,7 @@ def pow_mod(x: int, y: int, p: int) -> int:
 
     if y == 0: return 1
     if y == 1: return x % p
-    temp: int = pow(x, y // 2) % p
+    temp: int = pow_mod(x, y // 2, p)
     return (temp * temp * pow(x, y % 2)) % p
 
 def gcd(a: int, b: int) -> int:
@@ -41,6 +85,5 @@ def inverse_modulo(a: int, m: int) -> int:
         r = r_;                 u = u_;                 v = v_
         r_ = r_temp - (q * r_); u_ = u_temp - (q * u_); v_ = v_temp - (q * v_)
     
-    while u < 0:
-        u += m
-    return u
+    # if u is negative, u becomes positive.
+    return u % m

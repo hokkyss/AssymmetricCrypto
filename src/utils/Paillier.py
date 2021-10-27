@@ -1,5 +1,6 @@
 # Paillier Algorithm
 
+from src.utils.EllipticCurve import EllipticCurve
 from textwrap import wrap
 from typing import List
 
