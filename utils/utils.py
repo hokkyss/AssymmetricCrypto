@@ -1,8 +1,8 @@
-from typing import ClassVar, Dict
-from typing_extensions import Final
+import random
+from typing import ClassVar, Dict, List
 
 class StringEncoder:
-    __CHAR_MAP: Final[ClassVar[Dict[str, str]]] = {
+    __CHAR_MAP: ClassVar[Dict[str, str]] = {
         "0": "00",
         "1": "01",
         "2": "02",
@@ -47,6 +47,26 @@ class StringEncoder:
         for c in string:
             result = result + StringEncoder.__CHAR_MAP[c]
         return result
+
+class PrimeGenerator:
+    __PRIMES: List[int]
+
+    def __init__(self) -> None:
+        self.__PRIMES = []
+        prime = [True for _ in range(100000)]
+        prime[1] = False
+        for i in range(2, 100000):
+            if prime[i]:
+                self.__PRIMES.append(i)
+            j = i * i
+            while (j < 100000):
+                prime[j] = False
+                j += i
+        
+        print("SELESAI")
+
+    def random(self):
+        return random.choice(self.__PRIMES)
 
 def pow_mod(x: int, y: int, p: int) -> int:
     """

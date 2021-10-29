@@ -1,6 +1,7 @@
-from src.utils.utils import inverse_modulo, pow_mod
 from typing import ClassVar, List, Tuple
 from typing_extensions import Final, final
+
+from .utils import inverse_modulo, pow_mod
 
 @final
 class EllipticCurve:

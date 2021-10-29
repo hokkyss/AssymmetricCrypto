@@ -3,7 +3,7 @@
 from textwrap import wrap
 from typing import List
 
-from utils.utils import pow_mod
+from .utils import pow_mod
 
 # Get the inverse modulo of e mod toi
 def inverse_modulo(e: int, toi: int) -> int:

@@ -1,10 +1,10 @@
 # Paillier Algorithm
 
-from src.utils.EllipticCurve import EllipticCurve
 from textwrap import wrap
 from typing import List
 
-from utils.utils import lcm
+from .utils import lcm
+from .EllipticCurve import EllipticCurve
 
 # Get the inverse modulo of e mod toi
 def inverse_modulo(e: int, toi: int) -> int:

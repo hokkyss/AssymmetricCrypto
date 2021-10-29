@@ -4,7 +4,7 @@ from textwrap import wrap
 from typing import List, Tuple
 from random import randint
 
-from utils import inverse_modulo, pow_mod
+from .utils import inverse_modulo, pow_mod
 
 def encrypt(m: List[int], public_key: Tuple[int, int, int]) -> List[Tuple[int, int]]:
     (p, g, y) = public_key
