@@ -3,7 +3,7 @@
 from textwrap import wrap
 from typing import List
 
-from utils import pow_mod, inverse_modulo
+from .utils import pow_mod, inverse_modulo
 
 def text_to_block(text: str, block_size: int) -> List[int]:
     blocks = wrap(text, block_size)

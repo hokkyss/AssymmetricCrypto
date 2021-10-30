@@ -4,7 +4,7 @@
       <div class="media-body">
       <h2><a class="article-title" href="#">Asymmetric Encryption</a></h2>
         <p class="article-content">
-          <form action="#", method="post">
+          <form action="#", method="post", id="cryptography">
             <div class="key-container">
                 <div>
                     <label><b>Public Key</b></label><br>
@@ -55,4 +55,28 @@
         </p>
       </div>
     </article>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"
+          integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
+          crossorigin="anonymous"></script>
+ 
+    <script type="text/javascript">
+        $(document).on('submit', '#cryptography', function(e){
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+                url:'/',
+                data:{
+                    "public-key": $("[name='public-key']").val(),
+                    "private-key": $("[name='private-key']").val(),
+                    "choice": $("[name='choice']").val(),
+                    "mode": $("[name='mode']").val(),
+                    "input-box": $("[name='input-box']").val()
+                },
+                success:function()
+                {
+                    alert('saved');
+                }
+            })
+        });
+    </script>
 {% endblock content %}

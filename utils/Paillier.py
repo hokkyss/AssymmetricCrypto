@@ -3,7 +3,7 @@
 from textwrap import wrap
 from typing import List
 
-from utils import lcm, inverse_modulo, pow_mod
+from .utils import lcm, inverse_modulo, pow_mod
 
 def L(x, n):
     return (x - 1) / n
