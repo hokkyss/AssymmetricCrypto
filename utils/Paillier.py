@@ -3,17 +3,7 @@
 from textwrap import wrap
 from typing import List
 
-from .utils import lcm
-from .EllipticCurve import EllipticCurve
-
-# Get the inverse modulo of e mod toi
-def inverse_modulo(e: int, toi: int) -> int:
-    k = 1
-    val = (1 + (k * toi)) % e
-    while (val != 0):
-        k += 1
-        val = (1 + (k * toi)) % e
-    return int((1 + (k * toi)) / e)
+from utils import lcm, inverse_modulo, pow_mod
 
 def L(x, n):
     return (x - 1) / n
@@ -27,11 +17,13 @@ def paillier_encryption(m: int, g: int, n: int) -> int:
     # Nanti diganti sama generator
     r = 23
     return ((g ** m) * (r ** n)) % (n ** 2)
+    # return pow_mod(g ** m, r ** n, n ** 2)
 
 # Decrypt the ciphertext with Paillier Algorithm
 def paillier_decryption(c: int, lamda: int, miu: int, n: int) -> int:
     x = (c ** lamda) % (n ** 2)
     return (L(x, n) * miu) % n
+    # return pow_mod(L(x, n), miu, n)
 
 # Main program to test
 if (__name__ == "__main__"):
