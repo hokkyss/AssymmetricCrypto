@@ -36,19 +36,12 @@ def home():
 
 @app.route("/execute", methods=["POST"])
 def execute():
-    result: Dict[str, Union[str, int, None]] = {}
-    if request.method == "POST":
-        public_key = request.json.get("public-key")
-        private_key = request.json.get("private-key")
-        choice = request.json.get("choice")
-        mode = request.json.get("mode")
-        input_box = request.json.get("input-box")
-        result_box = proceed(public_key, private_key, choice, mode, input_box)
-    else:
-        result_box = ""
-
-    if not result_box: result_box = ""
-
+    public_key = request.json.get("public-key")
+    private_key = request.json.get("private-key")
+    choice = request.json.get("choice")
+    mode = request.json.get("mode")
+    input_box = request.json.get("input-box")
+    result_box = proceed(public_key, private_key, choice, mode, input_box)
     return result_box
 
 if __name__ == '__main__':

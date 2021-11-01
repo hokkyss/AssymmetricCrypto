@@ -53,17 +53,15 @@ class PrimeGenerator:
     __PRIMES: List[int]
 
     def __init__(self) -> None:
+        # Generate List of Prime Number
         self.__PRIMES = []
-        prime = [True for _ in range(100000)]
-        prime[1] = False
-        for i in range(2, 100000):
+        n = 10000000
+        prime = [True] * n
+        for i in range(3, int(n**0.5)+1, 2):
             if prime[i]:
-                self.__PRIMES.append(i)
-            j = i * i
-            while (j < 100000):
-                prime[j] = False
-                j += i
-        
+                prime[i*i::2*i]=[False]*((n-i*i-1)//(2*i)+1)
+
+        self.__PRIMES = [2] + [i for i in range(3,n,2) if prime[i]]
         print("SELESAI")
 
     def random(self):
