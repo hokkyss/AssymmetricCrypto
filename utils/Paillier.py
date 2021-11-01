@@ -16,14 +16,16 @@ def get_miu(g: int, lamda: int, n: int):
     return pow(L(x, n), -1, n)
 
 # Encrypt the ciphertext with Paillier Algorithm
-def paillier_encryption(m: int, g: int, n: int) -> int:
+def paillier_encryption(message: str, g: int, n: int) -> str:
+    m = int(message)
     r = PG.random_below(n)
-    return pow(pow(g, m, n * n) * pow(r, n, n * n), 1, n * n)
+    return str(pow(pow(g, m, n * n) * pow(r, n, n * n), 1, n * n))
 
 # Decrypt the ciphertext with Paillier Algorithm
-def paillier_decryption(c: int, lamda: int, miu: int, n: int) -> int:
+def paillier_decryption(ciphertext: str, lamda: int, miu: int, n: int) -> str:
+    c = int(ciphertext)
     x = pow(c, lamda, n ** 2)
-    return pow(L(x, n) * miu, 1, n)
+    return str(pow(L(x, n) * miu, 1, n))
 
 # Generate paillier key
 def generate_paillier_key():
@@ -56,10 +58,11 @@ if (__name__ == "__main__"):
     print("Private key\t\t:", lamda, ",", miu, ",", n)
 
     m = random.randint(0, n)
-    print("Message\t\t\t:", m)
+    message = str(m)
+    print("Message\t\t\t:", message)
 
-    c = paillier_encryption(m, g, n)
-    print("Cipherteks\t\t:", c)
+    ciphertext = paillier_encryption(m, g, n)
+    print("Cipherteks\t\t:", ciphertext)
 
-    decrypted_m = paillier_decryption(c, lamda, miu, n)
+    decrypted_m = paillier_decryption(ciphertext, lamda, miu, n)
     print("Decrypted\t\t:", decrypted_m)

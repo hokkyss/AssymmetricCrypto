@@ -34,12 +34,11 @@ def upload_private_key():
 
 @app.route("/generation", methods=["GET", "POST"])
 def generation():
-    output_text = ""
+    notification = ""
     if (request.method == "POST"):
         choice = request.json.get("choice")
-        all_keys, full_path = generateKey(choice)
-        output_text = "Generate key success! Saved on " + full_path
-        return output_text
+        notification = generateKey(choice)
+        return notification
     else:
         return render_template("generation.html")
 

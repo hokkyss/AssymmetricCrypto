@@ -73,7 +73,7 @@
         }))
         xhr.onreadystatechange = function(e){
             if (this.readyState === 4) {
-                document.getElementById("output").innerText = this.response
+                document.getElementById("output").value = this.response
             }
         }
     }

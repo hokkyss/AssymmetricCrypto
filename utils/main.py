@@ -25,19 +25,22 @@ def generateKey(choice):
         all_keys = [[],[]]
         filename = "ecc-" + str(id)
 
-    public_key = list(map(str, all_keys[0]))
-    private_key = list(map(str, all_keys[1]))
-    path = "keys/"
+    public_key = ','.join(list(map(str, all_keys[0])))
+    private_key = ','.join(list(map(str, all_keys[1])))
+    full_path = "keys/" + filename
     
-    f = open(path + filename + ".pub", 'w')
-    f.write(','.join(public_key))
+    f = open(full_path + ".pub", 'w')
+    f.write(public_key)
     f.close()
 
-    f = open(path + filename + ".pri", 'w')
-    f.write(','.join(private_key))
+    f = open(full_path + ".pri", 'w')
+    f.write(private_key)
     f.close()
 
-    return all_keys, path + filename
+    notification = "\nGenerate key success! Saved on " + full_path
+    notification += "\nPublic key : " + public_key
+    notification += "\nPrivate key : " + private_key
+    return notification
 
 def clean(text: str) -> List[int]:
     clean_text = text.replace(" ", "")
@@ -45,8 +48,6 @@ def clean(text: str) -> List[int]:
     return int_arr
 
 def proceed(public_key, private_key, choice, mode, message):
-    print(choice)
-    print(mode)
     if (mode == "Encryption"):
         if (choice == "RSA"):
             public_key_arr = clean(public_key)
