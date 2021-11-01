@@ -107,3 +107,5 @@ def inverse_modulo(a: int, m: int) -> int:
     
     # if u is negative, u becomes positive.
     return u % m
+
+PG = PrimeGenerator()

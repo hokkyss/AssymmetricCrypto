@@ -3,12 +3,45 @@
 import os
 from typing import Dict, Union
 
-from utils.main import proceed
+from utils.main import generateKey, proceed
 from utils.utils import PrimeGenerator
 from flask import Flask, json, render_template, request
 
 DEV = os.getenv("FLASK_ENV", "development")
 app = Flask(__name__)
+
+@app.route("/upload_public_key", methods=["POST"])
+def upload_public_key():
+    if (request.method == "POST"):
+        filename = request.json.get("public-key-file")
+        print(filename)
+        f = open("keys/" + filename, "r")
+        output_text = f.read()
+        return output_text
+    else:
+        return ""
+
+@app.route("/upload_private_key", methods=["POST"])
+def upload_private_key():
+    if request.method == "POST":
+        filename = request.json.get("private-key-file")
+        print(filename)
+        f = open("keys/" + filename, "r")
+        output_text = f.read()
+        return output_text
+    else:
+        return ""
+
+@app.route("/generation", methods=["GET", "POST"])
+def generation():
+    output_text = ""
+    if (request.method == "POST"):
+        choice = request.json.get("choice")
+        all_keys, full_path = generateKey(choice)
+        output_text = "Generate key success! Saved on " + full_path
+        return output_text
+    else:
+        return render_template("generation.html")
 
 @app.route("/", methods=['GET'])
 def encryption():

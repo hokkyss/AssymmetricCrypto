@@ -9,12 +9,14 @@
                 <div>
                     <label><b>Public Key</b></label><br>
                     <input type="file" id="public-key-file" name="public-key-file"><br><br>
+                    <button id="upload-public-key">Upload</button><br><br>
                     <label><b>Public Key</b></label><br>
                     <input type="text" id="public-key" name="public-key"><br><br> 
                 </div>
                 <div>
                     <label><b>Private Key</b></label><br>
                     <input type="file" id="private-key-file" name="private-key-file"><br><br>
+                    <button id="upload-private-key">Upload</button><br><br>
                     <label><b>Private Key</b></label><br>
                     <input type="text" id="private-key" name="private-key"><br><br>
                 </div>
@@ -47,7 +49,7 @@
                 <label><b>Result Box</b></label><br>
                 <textarea id="output" name="result-box" rows=5 class="text-area-box"></textarea><br><br>
             </div>
-            <button id="submit">Extract</button><br>
+            <button id="submit">Execute</button><br>
           </form>
         </p>
       </div>
@@ -58,30 +60,69 @@
         crossorigin="anonymous"></script>
 
     <script type="text/javascript">
-    $(function(){
-        const countResult = function(){
-            const xhr = new XMLHttpRequest();
-            xhr.open("POST", "{{ url_for('count') }}");
-            xhr.setRequestHeader("Content-Type", "application/json")
-            xhr.send(JSON.stringify({
-                    "public-key": $("[name='public-key']").val(),
-                    "private-key": $("[name='private-key']").val(),
-                    "choice": $("[name='choice']").val(),
-                    "mode": $("[name='mode']").val(),
-                    "input-box": $("[name='input-box']").val()
-            }))
-            xhr.onreadystatechange = function(e){
-                if (this.readyState === 4) {
-                    document.getElementById("output").innerText = this.response
-                }
+    const countResult = function(){
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "{{ url_for('count') }}");
+        xhr.setRequestHeader("Content-Type", "application/json")
+        xhr.send(JSON.stringify({
+                "public-key": $("[name='public-key']").val(),
+                "private-key": $("[name='private-key']").val(),
+                "choice": $("[name='choice']:checked").val(),
+                "mode": $("[name='mode']:checked").val(),
+                "input-box": $("[name='input-box']").val()
+        }))
+        xhr.onreadystatechange = function(e){
+            if (this.readyState === 4) {
+                document.getElementById("output").innerText = this.response
             }
         }
-        $('#submit').on('click', function(e){
-            e.preventDefault();
-            e.stopPropagation();
+    }
 
-            countResult()
-        })
+    const uploadPublicKey = function(){
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "{{ url_for('upload_public_key') }}");
+        xhr.setRequestHeader("Content-Type", "application/json")
+        xhr.send(JSON.stringify({
+                "public-key-file": document.getElementById("public-key-file").files[0].name
+        }))
+        xhr.onreadystatechange = function(e){
+            if (this.readyState === 4) {
+                document.getElementById("public-key").value = this.response;
+            }
+        }
+    }
+
+    const uploadPrivateKey = function(){
+        const xhr = new XMLHttpRequest();
+        console.log("Aing maung")
+        xhr.open("POST", "{{ url_for('upload_private_key') }}");
+        xhr.setRequestHeader("Content-Type", "application/json")
+        xhr.send(JSON.stringify({
+                "private-key-file": document.getElementById("private-key-file").files[0].name
+        }))
+        xhr.onreadystatechange = function(e){
+            if (this.readyState === 4) {
+                document.getElementById("private-key").value = this.response;
+            }
+        }
+    }
+
+    $('#upload-public-key').on('click', function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        uploadPublicKey()
+    })
+
+    $('#upload-private-key').on('click', function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        uploadPrivateKey()
+    })
+
+    $('#submit').on('click', function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        countResult()
     })
     </script>
 {% endblock content %}

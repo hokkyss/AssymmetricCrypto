@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+{% block content %}
+  <article class="media content-section">
+      <div class="media-body">
+      <h2><a class="article-title" href="#">Generate Key</a></h2>
+        <p class="article-content">
+          <form id="cryptography" name="cryptography">         
+            <div>
+                <label><b>Cryptography Algorithm</b></label><br>
+                <input type="radio" name="choice" value="RSA">
+                <label>RSA</label><br>
+                <input type="radio" name="choice" value="ElGamal">
+                <label>ElGamal</label><br>
+                <input type="radio" name="choice" value="Paillier">
+                <label>Paillier</label><br>
+                <input type="radio" name="choice" value="Elliptic Curve Cryptography">
+                <label>Elliptic Curve Cryptography</label><br><br>
+            </div>
+            <button id="generate">Generate Key!</button><br>
+            <label id="notification"></label>
+          </form>
+        </p>
+      </div>
+    </article>
+    <script
+        src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+        crossorigin="anonymous"></script>
+
+    <script type="text/javascript">
+    const generateKey = function(){
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "{{ url_for('generation') }}");
+        xhr.setRequestHeader("Content-Type", "application/json")
+        xhr.send(JSON.stringify({
+            "choice": $("[name='choice']:checked").val(),
+        }))
+        xhr.onreadystatechange = function(e){
+            if (this.readyState === 4) {
+                document.getElementById("notification").innerText = this.response
+            }
+        }
+    }
+
+    $('#generate').on('click', function(e){
+        e.preventDefault();
+        e.stopPropagation();
+
+        generateKey()
+    })
+    </script>
+{% endblock content %}
