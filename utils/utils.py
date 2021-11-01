@@ -1,4 +1,5 @@
 import random
+import numpy as np
 from typing import ClassVar, Dict, List
 
 class StringEncoder:
@@ -67,6 +68,13 @@ class PrimeGenerator:
 
     def random(self):
         return random.choice(self.__PRIMES)
+    
+    def random_below(self, n):
+        filtered_prime = [x for x in self.__PRIMES if x <= n]
+        selected_prime = random.choice(filtered_prime)
+        while (gcd(selected_prime, n) != 1):
+            selected_prime = random.choice(filtered_prime)
+        return selected_prime
 
 def pow_mod(x: int, y: int, p: int) -> int:
     """

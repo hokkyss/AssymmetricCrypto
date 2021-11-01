@@ -6,16 +6,18 @@ from typing import List
 
 from .utils import PG, pow_mod, inverse_modulo
 
-def text_to_block(text: str, block_size: int) -> List[int]:
-    text_length = len(text)
-    hasil_bagi = text_length % block_size
-    if (hasil_bagi != 0):
-        first_block = list(map(int, wrap(text[:hasil_bagi], block_size)))
-        blocks = list(map(int, wrap(text[hasil_bagi:], block_size)))
-        return first_block + blocks
-    else:
-        blocks = list(map(int, wrap(text, block_size)))
-        return blocks
+def text_to_block(message: str, n: int) -> List[int]:
+    digits: int = len(str(n))
+    messages: List[int]
+    try:
+        messages = list(map(int, wrap(message, digits)))
+        for block in messages:
+            if (block >= n) or (block < 0):
+                raise ValueError
+    except:
+        messages = list(map(int, wrap(message, digits - 1)))
+    print(messages)
+    return messages
 
 def block_to_text(m: List[int], block_size: int) -> str:
     final_m = []
@@ -27,22 +29,26 @@ def block_to_text(m: List[int], block_size: int) -> str:
 # Encrypt the ciphertext with RSA Algorithm
 def rsa_encryption(message: str, n: int, e: int) -> str:
     block_size = len(str(n))
-    m = text_to_block(message, block_size)
+    # m = text_to_block(message, block_size)
+    m = text_to_block(message, n)
     c = []
     for block in m:
         ci = pow_mod(block, e, n)
         c.append(ci)
     return block_to_text(c, block_size)
+    # return ''.join(list(map(str, c)))
 
 # Decrypt the ciphertext with RSA Algorithm
 def rsa_decryption(ciphertext: str, n: int, d: int) -> str:
-    block_size = len(str(n))
-    c = text_to_block(ciphertext, block_size)
+    # block_size = len(str(n))
+    # c = text_to_block(ciphertext, block_size)
+    c = text_to_block(ciphertext, n)
     m = []
     for block in c:
         mi = pow_mod(block, d, n)
         m.append(mi)
-    return block_to_text(m, block_size)
+    # return block_to_text(m, block_size)
+    return ''.join(list(map(str, m)))
 
 # Generate rsa key
 def generate_rsa_key():
@@ -73,8 +79,8 @@ if (__name__ == "__main__"):
     print("Public key (e, n)\t:", e, ",", n)
     print("Private key (d, n)\t:", d, ",", n)
 
-    message = "07041111140011080204"
-    # message = "99999999999999999999"
+    message = "7041111140011080204"
+    message = "99999999999999999999"
     # message = input()
     print("Message\t\t\t:", message)
 
