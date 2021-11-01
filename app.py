@@ -20,7 +20,7 @@ def encryption():
         result_box = proceed(public_key, private_key, choice, mode, input_box)
     else:
         result_box = ""
-    print("Result box", result_box)
+    print(result_box)
     return render_template("home.html", result_box = result_box)
 
 

@@ -47,7 +47,7 @@
 
             <div>
                 <label><b>Result Box</b></label><br>
-                <textarea name="result-box" rows=5 class="text-area-box"></textarea><br><br>
+                <textarea name="result-box" rows=5 class="text-area-box">{{result_box}}</textarea><br><br>
             </div>
 
             <input type="submit" value="Extract"><br>
@@ -55,10 +55,7 @@
         </p>
       </div>
     </article>
-    <script src="https://code.jquery.com/jquery-3.5.1.js"
-          integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
-          crossorigin="anonymous"></script>
- 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-vtXRMe3mGCbOeY7l30aIg8H9p3GdeSe4IFlP6G8JMa7o7lXvnz3GFKzPxzJdPfGK" crossorigin="anonymous"></script> 
     <script type="text/javascript">
         $(document).on('submit', '#cryptography', function(e){
             e.preventDefault();
