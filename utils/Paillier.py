@@ -15,7 +15,7 @@ def get_miu(g: int, lamda: int, n: int):
     x = pow(g, lamda, n ** 2)
     return pow(L(x, n), -1, n)
 
-# Encrypt the ciphertext with Paillier Algorithm
+# Encrypt the message / plaintext with Paillier Algorithm
 def paillier_encryption(message: str, g: int, n: int) -> str:
     m = int(message)
     r = PG.random_below(n)

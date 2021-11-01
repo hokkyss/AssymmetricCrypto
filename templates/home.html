@@ -60,9 +60,9 @@
         crossorigin="anonymous"></script>
 
     <script type="text/javascript">
-    const countResult = function(){
+    const execute = function(){
         const xhr = new XMLHttpRequest();
-        xhr.open("POST", "{{ url_for('count') }}");
+        xhr.open("POST", "{{ url_for('execute') }}");
         xhr.setRequestHeader("Content-Type", "application/json")
         xhr.send(JSON.stringify({
                 "public-key": $("[name='public-key']").val(),
@@ -122,7 +122,7 @@
     $('#submit').on('click', function(e){
         e.preventDefault();
         e.stopPropagation();
-        countResult()
+        execute()
     })
     </script>
 {% endblock content %}

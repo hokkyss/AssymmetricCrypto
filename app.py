@@ -3,7 +3,7 @@
 import os
 from typing import Dict, Union
 
-from utils.main import generateKey, proceed
+from utils.MainModule import generateKey, proceed, readFile
 from utils.utils import PrimeGenerator
 from flask import Flask, json, render_template, request
 
@@ -12,25 +12,13 @@ app = Flask(__name__)
 
 @app.route("/upload_public_key", methods=["POST"])
 def upload_public_key():
-    if (request.method == "POST"):
-        filename = request.json.get("public-key-file")
-        print(filename)
-        f = open("keys/" + filename, "r")
-        output_text = f.read()
-        return output_text
-    else:
-        return ""
+    filename = request.json.get("public-key-file")
+    return readFile(filename)
 
 @app.route("/upload_private_key", methods=["POST"])
 def upload_private_key():
-    if request.method == "POST":
-        filename = request.json.get("private-key-file")
-        print(filename)
-        f = open("keys/" + filename, "r")
-        output_text = f.read()
-        return output_text
-    else:
-        return ""
+    filename = request.json.get("private-key-file")
+    return readFile(filename)
 
 @app.route("/generation", methods=["GET", "POST"])
 def generation():
@@ -43,11 +31,11 @@ def generation():
         return render_template("generation.html")
 
 @app.route("/", methods=['GET'])
-def encryption():
+def home():
     return render_template("home.html")
 
-@app.route("/count", methods=["POST"])
-def count():
+@app.route("/execute", methods=["POST"])
+def execute():
     result: Dict[str, Union[str, int, None]] = {}
     if request.method == "POST":
         public_key = request.json.get("public-key")

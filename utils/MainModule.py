@@ -4,6 +4,19 @@ from .Paillier import *
 # from .EllipticCurve import *
 from .utils import *
 
+# Read the file and return the content of the file
+def readFile(filename: str) -> str:
+    f = open("keys/" + filename, "r")
+    output_text = f.read()
+    return output_text
+
+# Clean the key into list of value contain in key
+def clean(text: str) -> List[int]:
+    clean_text = text.replace(" ", "")
+    int_arr = list(map(int, clean_text.split(",")))
+    return int_arr
+
+# Generate the key based on user choice
 def generateKey(choice):
     print(choice)
     all_keys = None
@@ -14,6 +27,7 @@ def generateKey(choice):
         filename = "rsa-" + str(id)
 
     elif (choice == "ElGamal"):
+        # TO DO LIST HOKKI
         all_keys = [[],[]]
         filename = "elgamal-" + str(id)
 
@@ -22,6 +36,7 @@ def generateKey(choice):
         filename = "paillier-" + str(id)
 
     elif (choice == "ECC"):
+        # TO DO LIST HOKKI
         all_keys = [[],[]]
         filename = "ecc-" + str(id)
 
@@ -42,11 +57,8 @@ def generateKey(choice):
     notification += "\nPrivate key : " + private_key
     return notification
 
-def clean(text: str) -> List[int]:
-    clean_text = text.replace(" ", "")
-    int_arr = list(map(int, clean_text.split(",")))
-    return int_arr
 
+# Proceed to encrypt / decrypt message with chosen algorithm
 def proceed(public_key, private_key, choice, mode, message):
     if (mode == "Encryption"):
         if (choice == "RSA"):
@@ -54,10 +66,16 @@ def proceed(public_key, private_key, choice, mode, message):
             e, n = public_key_arr[0], public_key_arr[1]
             return rsa_encryption(message, n, e)
         
-        if (choice == "Paillier"):
+        elif (choice == "ElGamal"):
+            pass
+        
+        elif (choice == "Paillier"):
             public_key_arr = clean(public_key)
             g, n = public_key_arr[0], public_key_arr[1]
             return paillier_encryption(int(message), g, n)
+        
+        elif (choice == "ECC"):
+            pass
 
     if (mode == "Decryption"):
         if (choice == "RSA"):
@@ -65,10 +83,13 @@ def proceed(public_key, private_key, choice, mode, message):
             d, n = private_key_arr[0], private_key_arr[1]
             return rsa_decryption(message, n, d)
         
-        if (choice == "Paillier"):
+        elif (choice == "ElGamal"):
+            pass
+        
+        elif (choice == "Paillier"):
             private_key_arr = clean(private_key)
             lamda, miu, n = private_key_arr[0], private_key_arr[1], private_key_arr[2]
             return paillier_decryption(int(message), lamda, miu, n)
 
-        
-
+        elif (choice == "ECC"):
+            pass
