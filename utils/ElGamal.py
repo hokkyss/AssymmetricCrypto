@@ -2,7 +2,7 @@
 from typing import List, Tuple
 from random import randint
 
-from .utils import inverse_modulo, message_blocking, pow_mod
+from .utils import PrimeGenerator, inverse_modulo, message_blocking, pow_mod
 
 class ElGamal:
     @staticmethod
@@ -31,6 +31,15 @@ class ElGamal:
             result.append((b * inverse) % p)
         return result
 
+    @staticmethod
+    def generate_key():
+        p = PrimeGenerator.random()
+
+        x = randint(1, p - 2)
+        g = randint(0, p - 1)
+        y = pow_mod(g, x, p)
+        return [[p, g, y], [p, x]]
+
 if __name__ == "__main__":
     print("p is public")
     p = int(input("p = any prime number = "))
@@ -41,8 +50,8 @@ if __name__ == "__main__":
     print("g is public. g <", p)
     g = int(input("g = "))
 
-    print("y is public. y =", (g ** x) % p)
-    y = (g ** x) % p
+    print("y is public. y =", pow_mod(g, x, p))
+    y = pow_mod(g, x, p)
 
     print("public key: (p, g, y) =", (p, g, y))
     # private key = x

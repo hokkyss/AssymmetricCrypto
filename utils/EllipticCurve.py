@@ -199,6 +199,4 @@ class EllipticCurve:
         B = EllipticCurve(x, y)
         pB = B.multiply(private)
 
-        print(base, pB, private)
-
-        return [[str(B), str(pB)], [private]]
+        return [[str(B), str(pB)], [private, str(B)]]

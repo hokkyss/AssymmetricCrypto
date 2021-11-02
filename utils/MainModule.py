@@ -133,14 +133,9 @@ def proceed(public_key, private_key, choice: Literal['RSA', 'ElGamal', 'Paillier
         if (choice == "Elliptic Curve Cryptography"):
             private_key_arr = clean(private_key)
 
-            if len(private_key_arr) != 1:
-                raise ValueError('Private key format: <b>')
-            [b] = private_key_arr
-
-            public_key_arr = clean(public_key)
-            if len(public_key_arr) != 2 and len(public_key_arr) != 4:
-                raise ValueError('Public key format: <B.x>, <B.y> | <B.x>, <B.y>, <Pb.x>, <Pb.y>')
-            [x, y] = public_key_arr
+            if len(private_key_arr) != 3:
+                raise ValueError('Private key format: <b>, <B.x>, <B.y>')
+            [b, x, y] = private_key_arr
             B = EllipticCurve(x, y)
 
             if len(clean(message)) % 4 != 0:
