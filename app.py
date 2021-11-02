@@ -37,8 +37,9 @@ def generation():
             notification["result"] += "\nPublic key : " + public_key
             notification["result"] += "\nPrivate key : " + private_key
 
-            notification["private"] = url_for('static', filename=f'{filename}.pri')
-            notification["public"] = url_for('static', filename=f'{filename}.pub')
+            if not DEV:
+                notification["private"] = url_for('static', filename=f'{filename}.pri')
+                notification["public"] = url_for('static', filename=f'{filename}.pub')
             notification["filename"] = filename
         except ValueError as e:
             notification["error"] = str(e)
