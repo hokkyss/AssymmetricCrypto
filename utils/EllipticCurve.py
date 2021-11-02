@@ -1,9 +1,9 @@
 import json
 from typing import ClassVar, Dict, List, Tuple
-from random import randint, random, shuffle
+from random import choice, randint, random, shuffle
 from string import ascii_uppercase, ascii_lowercase, digits
 
-from .utils import StringEncoder, inverse_modulo, pow_mod
+from .utils import PrimeGenerator, StringEncoder, inverse_modulo, pow_mod
 
 class EllipticCurve:
     __INFINITY: ClassVar[Tuple[int, int]] = (0, 10000000000000000000000000000000000000000000000000000000000000000)
@@ -14,6 +14,7 @@ class EllipticCurve:
     __table: ClassVar[List[int]] = []
     __encoding_table: ClassVar[Dict[str, Tuple[int, int]]] = {}
     __decoding_table: ClassVar[Dict[str, str]] = {}
+    __ALL_POINTS: ClassVar[List[Tuple[int, int]]] = []
 
     def __init__(self, x: int, y: int) -> None:
         self.x = x
@@ -151,6 +152,20 @@ class EllipticCurve:
         return result
 
     @staticmethod
+    def __get_y(x: int) -> List[int]:
+        p = EllipticCurve.__p
+        a = EllipticCurve.__a
+        b = EllipticCurve.__b
+
+        x = x % p
+        kuadrat = (pow_mod(x, 3, p) + x * a + b) % p
+        result: List[int] = []
+        for i in range(p):
+            if EllipticCurve.__table[i] == kuadrat:
+                result.append(i)
+        return result
+
+    @staticmethod
     def generate():
         if len(EllipticCurve.__encoding_table.keys()) != 0: return
 
@@ -165,6 +180,25 @@ class EllipticCurve:
 
         EllipticCurve.encode(all_characters)
 
+        for i in range(p):
+            points: List[Tuple[int, int]] = EllipticCurve.__get_y(i)
+
+            for y in points:
+                EllipticCurve.__ALL_POINTS.append((i, y))
+
     @staticmethod
     def __decode(string: str) -> str:
         return EllipticCurve.__decoding_table[string]
+
+    @staticmethod
+    def generate_key():
+        base = choice(EllipticCurve.__ALL_POINTS)
+
+        private = PrimeGenerator.random()
+        (x, y) = base
+        B = EllipticCurve(x, y)
+        pB = B.multiply(private)
+
+        print(base, pB, private)
+
+        return [[str(B), str(pB)], [private]]
