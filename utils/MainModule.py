@@ -62,14 +62,19 @@ def proceed(public_key, private_key, choice: Literal['RSA', 'ElGamal', 'Paillier
             
             e, n = public_key_arr[0], public_key_arr[1]
             return rsa_encryption(message, n, e)
+
         if (choice == "Paillier"):
             public_key_arr = clean(public_key)
 
             if len(public_key_arr) != 2:
                 raise ValueError('Public key format: <g>, <n>')
-            
+            m: int = int(message)
+
             g, n = public_key_arr[0], public_key_arr[1]
-            return paillier_encryption(int(message), g, n)
+            if ((m > n) or (m < 0)):
+                raise ValueError('Message must be between 0 and n')
+            return paillier_encryption(m, g, n)
+
         if (choice == "ElGamal"):
             public_key_arr = clean(public_key)
             
@@ -79,6 +84,7 @@ def proceed(public_key, private_key, choice: Literal['RSA', 'ElGamal', 'Paillier
 
             message_block = message_blocking(p, message, p)
             return ElGamal.encrypt(message_block, (p, g, y))
+            
         if (choice == "Elliptic Curve Cryptography"):
             public_key_arr = clean(public_key)
 
@@ -100,6 +106,7 @@ def proceed(public_key, private_key, choice: Literal['RSA', 'ElGamal', 'Paillier
 
             d, n = private_key_arr[0], private_key_arr[1]
             return rsa_decryption(message, n, d)
+            
         if (choice == "Paillier"):
             private_key_arr = clean(private_key)
 
@@ -107,7 +114,11 @@ def proceed(public_key, private_key, choice: Literal['RSA', 'ElGamal', 'Paillier
                 raise ValueError('Private key format: <λ>, <µ>, <n>')
 
             lamda, miu, n = private_key_arr[0], private_key_arr[1], private_key_arr[2]
-            return paillier_decryption(int(message), lamda, miu, n) 
+            m: int = int(message)
+            if ((m > n * n) or (m < 0)):
+                raise ValueError('Ciphertext must be between 0 and n^2')
+            return paillier_decryption(int(message), lamda, miu, n)
+
         if (choice == "ElGamal"):
             private_key_arr = clean(private_key)
             
