@@ -52,6 +52,8 @@ def proceed(public_key, private_key, choice: Literal['RSA', 'ElGamal', 'Paillier
         raise ValueError('You must choose a Cryptography Algorithm.')
     if not mode:
         raise ValueError('You must either encrypt or decrypt')
+    if not message:
+        raise ValueError('Input a message.')
 
     if (mode == "Encryption"):
         if not public_key:
