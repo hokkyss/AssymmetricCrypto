@@ -209,7 +209,7 @@ class EllipticCurve:
     def generate_key():
         base = choice(EllipticCurve.__ALL_POINTS)
 
-        private = PrimeGenerator.random()
+        private = PrimeGenerator.random_below(EllipticCurve.__p - 1)
         (x, y) = base
         B = EllipticCurve(x, y)
         pB = B.multiply(private)
