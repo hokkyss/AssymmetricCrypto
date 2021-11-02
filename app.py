@@ -10,13 +10,9 @@ from flask import Flask, render_template, request
 DEV = os.getenv("FLASK_ENV", "development")
 app = Flask(__name__)
 
-<<<<<<< HEAD
 PrimeGenerator.fill()
 
 @app.route("/upload_public_key", methods=["POST"])
-=======
-@app.route("/upload_public_key", methods=['POST'])
->>>>>>> c90e4d64db86f22de786c528fac84c2bd9961f60
 def upload_public_key():
     filename = request.json.get("public-key-file")
     return readFile(filename)
@@ -40,9 +36,8 @@ def generation():
 def home():
     return render_template("home.html")
 
-<<<<<<< HEAD
-@app.route("/count", methods=["POST"])
-def count():
+@app.route("/execute", methods=["POST"])
+def execute():
     result: Dict[str, str] = { "result": "", "error": None }
     try:
         public_key = request.json.get("public-key")
@@ -58,17 +53,6 @@ def count():
         result["error"] = str(e)
 
     return result
-=======
-@app.route("/execute", methods=['POST'])
-def execute():
-    public_key = request.json.get("public-key")
-    private_key = request.json.get("private-key")
-    choice = request.json.get("choice")
-    mode = request.json.get("mode")
-    input_box = request.json.get("input-box")
-    result_box = proceed(public_key, private_key, choice, mode, input_box)
-    return result_box
->>>>>>> c90e4d64db86f22de786c528fac84c2bd9961f60
 
 @app.route("/guideline", methods=['GET'])
 def guideline():

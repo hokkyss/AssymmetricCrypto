@@ -13,6 +13,14 @@ h6 {
   color: #444444;
 }
 
+* {
+  outline: none;
+}
+
+textarea {
+  resize: none;
+}
+
 .bg-steel {
   background-color: #5f788a;
 }
