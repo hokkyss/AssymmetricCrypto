@@ -95,6 +95,7 @@ def proceed(public_key, private_key, choice: Literal['RSA', 'ElGamal', 'Paillier
             if len(public_key_arr) != 4:
                 raise ValueError('Public key format: <B.x>, <B.y>, <Pb.x>, <Pb.y>')
             [Bx, By, PbX, PbY] = public_key_arr
+            EllipticCurve.check_validity(Bx, By, PbX, PbY)
 
             B = EllipticCurve(Bx, By)
             mess = EllipticCurve.encode(message)
@@ -141,6 +142,8 @@ def proceed(public_key, private_key, choice: Literal['RSA', 'ElGamal', 'Paillier
             if len(private_key_arr) != 3:
                 raise ValueError('Private key format: <b>, <B.x>, <B.y>')
             [b, x, y] = private_key_arr
+            EllipticCurve.check_validity(x, y)
+
             B = EllipticCurve(x, y)
 
             if len(clean(message)) % 4 != 0:

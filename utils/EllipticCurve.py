@@ -93,6 +93,22 @@ class EllipticCurve:
         return result
 
     @staticmethod
+    def check_validity(Bx: int, By: int):
+        p = EllipticCurve.__p
+        if (Bx >= 0 and Bx < p and By >= 0 and By < p):
+            pass
+        else:
+            raise ValueError(f'Each number must be between {0} and {p - 1}, inclusively!')
+
+    @staticmethod
+    def check_validity(Bx: int, By: int, PbX: int, PbY: int):
+        p = EllipticCurve.__p
+        if Bx >= 0 and Bx < p and By >= 0 and By < p and PbX >= 0 and PbX < p and PbY >= 0 and PbY < 0:
+            pass
+        else:
+            raise ValueError(f'Each number must be between {0} and {p - 1}, inclusively!')
+
+    @staticmethod
     def decrypt(m: List[Tuple[Tuple[int, int], Tuple[int, int]]], private_key: int) -> List[int]:
         result: List[str] = []
         p = EllipticCurve.__p
