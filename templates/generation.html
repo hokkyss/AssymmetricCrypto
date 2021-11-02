@@ -2,7 +2,7 @@
 {% block content %}
   <article class="media content-section">
       <div class="media-body">
-      <h2><a class="article-title" href="#">Generate Key</a></h2>
+      <h2><a class="article-title" href="#" >Generate Key</a></h2>
         <p class="article-content">
           <form id="cryptography" name="cryptography">         
             <div>
@@ -32,12 +32,29 @@
         const xhr = new XMLHttpRequest();
         xhr.open("POST", "{{ url_for('generation') }}");
         xhr.setRequestHeader("Content-Type", "application/json")
+        xhr.responseType = "json"
         xhr.send(JSON.stringify({
             "choice": $("[name='choice']:checked").val(),
         }))
         xhr.onreadystatechange = function(e){
             if (this.readyState === 4) {
-                document.getElementById("notification").innerText = this.response
+                if (this.response.error) {
+                  alert(this.response.error);
+                  return;
+                }
+                document.getElementById("notification").innerText = this.response.result
+
+                if (!this.response.DEV) {
+                  download_private = document.createElement("a");
+                  download_private.href = this.response.private;
+                  download_private.download = this.response.private;
+                  download_public = document.createElement("a");
+                  download_public.href = this.response.public;
+                  download_public.download = this.response.public;
+
+                  download_private.click();
+                  download_public.click();
+                }
             }
         }
     }

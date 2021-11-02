@@ -1,14 +1,15 @@
 # app.py
 
 import os
+import random
 from typing import Dict, Union
 
 from utils.EllipticCurve import EllipticCurve
 from utils.MainModule import generateKey, proceed, readFile
 from utils.utils import PrimeGenerator
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, url_for
 
-DEV = os.getenv("FLASK_ENV", "development")
+DEV = os.getenv("FLASK_ENV", "development") == "development"
 app = Flask(__name__)
 
 PrimeGenerator.fill()
@@ -26,10 +27,32 @@ def upload_private_key():
 
 @app.route("/generation", methods=["GET", 'POST'])
 def generation():
-    notification = ""
     if (request.method == 'POST'):
-        choice = request.json.get("choice")
-        notification = generateKey(choice)
+        notification = { "result": "", "public": "", "private": "", "DEV": DEV, "error": "" }
+        try:
+            choice = request.json.get("choice")
+            [public_key, private_key, filename] = generateKey(choice)
+
+            full_path = "static/" + filename
+
+            f = open(full_path + ".pub", 'w')
+            f.write(public_key)
+            f.close()
+
+            f = open(full_path + ".pri", 'w')
+            f.write(private_key)
+            f.close()
+
+            notification["result"] = f"\nGenerate key success! Saved as {filename}.pub and {filename}.pri"
+            notification["result"] += "\nPublic key : " + public_key
+            notification["result"] += "\nPrivate key : " + private_key
+
+            notification["private"] = url_for('static', filename=f'{filename}.pri')
+            notification["public"] = url_for('static', filename=f'{filename}.pub')
+            notification["filename"] = filename
+        except ValueError as e:
+            notification["error"] = str(e)
+
         return notification
     else:
         return render_template("generation.html")
