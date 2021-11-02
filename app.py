@@ -15,16 +15,6 @@ app = Flask(__name__)
 PrimeGenerator.fill()
 EllipticCurve.generate()
 
-@app.route("/upload_public_key", methods=["POST"])
-def upload_public_key():
-    filename = request.json.get("public-key-file")
-    return readFile(filename)
-
-@app.route("/upload_private_key", methods=['POST'])
-def upload_private_key():
-    filename = request.json.get("private-key-file")
-    return readFile(filename)
-
 @app.route("/generation", methods=["GET", 'POST'])
 def generation():
     if (request.method == 'POST'):
@@ -78,6 +68,11 @@ def execute():
         result["error"] = str(e)
 
     return result
+
+@app.route("/get-content", methods=["POST"])
+def file_content():
+    file = request.files.get('file')
+    return file.stream.read().decode()
 
 @app.route("/guideline", methods=['GET'])
 def guideline():

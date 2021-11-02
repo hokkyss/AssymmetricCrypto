@@ -54,6 +54,8 @@ def proceed(public_key, private_key, choice: Literal['RSA', 'ElGamal', 'Paillier
         raise ValueError('You must either encrypt or decrypt')
 
     if (mode == "Encryption"):
+        if not public_key:
+            raise ValueError('Public key must not be empty!')
         if (choice == "RSA"):
             public_key_arr = clean(public_key)
             
@@ -98,6 +100,8 @@ def proceed(public_key, private_key, choice: Literal['RSA', 'ElGamal', 'Paillier
             return B.encrypt(mess, (PbX, PbY))
 
     if (mode == "Decryption"):
+        if not private_key:
+            raise ValueError('Private key must not be empty')
         if (choice == "RSA"):
             private_key_arr = clean(private_key)
 
