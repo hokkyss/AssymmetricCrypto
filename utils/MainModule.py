@@ -1,12 +1,9 @@
-import os
 from typing_extensions import Literal
 from .RSA import *
 from .ElGamal import *
 from .Paillier import *
 from .EllipticCurve import *
 from .utils import *
-
-DEV = os.getenv("FLASK_ENV", "development") == "development"
 
 # Read the file and return the content of the file
 def readFile(filename: str) -> str:
