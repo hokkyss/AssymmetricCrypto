@@ -67,69 +67,90 @@ def proceed(public_key, private_key, choice: Literal['RSA', 'ElGamal', 'Paillier
 
     if (mode == "Encryption"):
         if (choice == "RSA"):
-            try:
-                public_key_arr = clean(public_key)
-                e, n = public_key_arr[0], public_key_arr[1]
-                return rsa_encryption(message, n, e)
-            except:
+            public_key_arr = clean(public_key)
+            
+            if len(public_key_arr) != 2:
                 raise ValueError('Public key format: <e>, <n>')
+            
+            e, n = public_key_arr[0], public_key_arr[1]
+            return rsa_encryption(message, n, e)
         if (choice == "Paillier"):
-            try:
-                public_key_arr = clean(public_key)
-                g, n = public_key_arr[0], public_key_arr[1]
-                return paillier_encryption(int(message), g, n)
-            except:
+            public_key_arr = clean(public_key)
+
+            if len(public_key_arr) != 2:
                 raise ValueError('Public key format: <g>, <n>')
+            
+            g, n = public_key_arr[0], public_key_arr[1]
+            return paillier_encryption(int(message), g, n)
         if (choice == "ElGamal"):
-            try:
-                public_key_arr = clean(public_key)
-                [p, g, y] = public_key_arr
-
-                message_block = message_blocking(p, message, p)
-                return ElGamal.encrypt(message_block, (p, g, y))
-            except:
+            public_key_arr = clean(public_key)
+            
+            if len(public_key_arr) != 3:
                 raise ValueError('Public key format: <p>, <g>, <y>')
+            [p, g, y] = public_key_arr
+
+            message_block = message_blocking(p, message, p)
+            return ElGamal.encrypt(message_block, (p, g, y))
         if (choice == "Elliptic Curve Cryptography"):
-            try:
-                public_key_arr = clean(public_key)
+            public_key_arr = clean(public_key)
 
-                [Bx, By, PbX, PbY] = public_key_arr
-
-                B = EllipticCurve(Bx, By)
-                mess = EllipticCurve.encode(message)
-
-                return B.encrypt(mess, (PbX, PbY))
-            except:
+            if len(public_key_arr) != 4:
                 raise ValueError('Public key format: <B.x>, <B.y>, <Pb.x>, <Pb.y>')
+            [Bx, By, PbX, PbY] = public_key_arr
+
+            B = EllipticCurve(Bx, By)
+            mess = EllipticCurve.encode(message)
+
+            return B.encrypt(mess, (PbX, PbY))
+
     if (mode == "Decryption"):
         if (choice == "RSA"):
-            try:
-                private_key_arr = clean(private_key)
-                d, n = private_key_arr[0], private_key_arr[1]
-                return rsa_decryption(message, n, d)
-            except:
+            private_key_arr = clean(private_key)
+
+            if len(private_key_arr) != 2:
                 raise ValueError('Private key format: <d>, <n>')    
+
+            d, n = private_key_arr[0], private_key_arr[1]
+            return rsa_decryption(message, n, d)
         if (choice == "Paillier"):
-            try:
-                private_key_arr = clean(private_key)
-                lamda, miu, n = private_key_arr[0], private_key_arr[1], private_key_arr[2]
-                return paillier_decryption(int(message), lamda, miu, n) 
-            except:
+            private_key_arr = clean(private_key)
+
+            if len(private_key_arr) != 3:
                 raise ValueError('Private key format: <λ>, <µ>, <n>')
+
+            lamda, miu, n = private_key_arr[0], private_key_arr[1], private_key_arr[2]
+            return paillier_decryption(int(message), lamda, miu, n) 
         if (choice == "ElGamal"):
-            try:
-                public_key_arr = clean(public_key)
-                [p, g, y] = public_key_arr
+            private_key_arr = clean(private_key)
+            
+            if len(private_key_arr) != 2:
+                raise ValueError('Private key format: <p>, <x>')
 
-                message_block = message_blocking(p, message, p)
-                return ElGamal.encrypt(message_block, (p, g, y))
-            except:
-                raise ValueError('Public key format: <p>, <g>, <y>')
+            [p, x] = private_key_arr
+
+            message_block = message_blocking(p, message, p)
+            return ElGamal.decrypt(message_block, (p, x))
         if (choice == "Elliptic Curve Cryptography"):
-            try:
-                public_key_arr = clean(public_key)
+            private_key_arr = clean(private_key)
 
-                [Bx, By, PbX, PbY] = public_key_arr
-                return EllipticCurve.encrypt(message, (Bx, By), (PbX, PbY))
-            except:
-                raise ValueError('Public key format: <B.x>, <B.y>, <p>, <Pb.x>, <Pb.y>, <a>, <b>')
+            if len(private_key_arr) != 1:
+                raise ValueError('Private key format: <b>')
+            [b] = private_key_arr
+
+            public_key_arr = clean(public_key)
+            if len(public_key_arr) != 2:
+                raise ValueError('Public key format: <B.x>, <B.y>')
+            [x, y] = public_key_arr
+            B = EllipticCurve(x, y)
+            print(B)
+            print(B.multiply(-1))
+
+            if len(clean(message)) % 4 != 0:
+                raise ValueError('Number of integers must be dividable by 4!')
+
+            mess: List[int] = clean(message)
+            parsed_message: List[Tuple[Tuple[int, int], Tuple[int, int]]] = []
+            for i in range(0, len(mess), 4):
+                parsed_message.append(((mess[i], mess[i + 1]), (mess[i + 2], mess[i + 3])))
+
+            return B.decrypt(parsed_message, b)

@@ -1,6 +1,4 @@
 from typing import ClassVar, Dict, List, Tuple
-from typing_extensions import Final, final
-import json
 from random import randint
 
 from .utils import StringEncoder, inverse_modulo, pow_mod
@@ -24,19 +22,19 @@ class EllipticCurve:
 
     def multiply(self, k: int):
         if k < 0:
-            (xR, yR) = self.multiply(-k)
-            return EllipticCurve(xR, -yR)
+            negative = self.multiply(-k)
+            return EllipticCurve(negative.x, -negative.y)
         if k == 0:
             (xO, yO) = EllipticCurve.__INFINITY
             return EllipticCurve(xO, yO)
         if k == 1:
             return self
-        
+
         multiplier = k // 2
         remainder = k % 2
 
         temp = self.multiply(multiplier)
-        
+
         return temp.add(temp).add(self.multiply(remainder))
 
     def add(self, other):
@@ -67,13 +65,13 @@ class EllipticCurve:
         yR = (((m * (xP - xR)) % p) - yP) % p
 
         return EllipticCurve(xR, yR)
-    
+
     def subtract(self, other):
         return self.add(other.multiply(-1))
 
     def __str__(self) -> str:
         return f"{self.x},{self.y}"
-    
+
     @staticmethod
     def encode(m: str) -> List[Tuple[int, int]]:
         result: List[Tuple[int, int]] = []
@@ -108,8 +106,10 @@ class EllipticCurve:
                 if not y:
                     (x, y) = EllipticCurve.__INFINITY
                 result.append((x, y))
+        
+        print(result)
         return result
-    
+
     @staticmethod
     def decode(P: Tuple[int, int]) -> str:
         return "A"
@@ -132,16 +132,22 @@ class EllipticCurve:
             Pc = (str(self.multiply(k)), str(EllipticCurve(x, y).add(public.multiply(k))))
             result.append(Pc)
         return result
-    
+
     @staticmethod
     def decrypt(m: List[Tuple[Tuple[int, int], Tuple[int, int]]], private_key: int) -> List[int]:
-        result: List[int] = []
+        result: List[str] = []
+        p = EllipticCurve.__p
 
         for (a, b) in m:
             (xa, ya) = a
             (xb, yb) = b
-            subtractor = EllipticCurve(xa, ya) * private_key
-            Pm = EllipticCurve(xb, yb) - subtractor
 
-            result.append(EllipticCurve.decode(Pm))
+            if (xa < 0) or (xa >= p) or (ya < 0) or (ya >= p) or (xb < 0) or (xb >= p) or (yb < 0) or (yb >= p):
+                raise ValueError(f'Each number must be between {0} and {p - 1}, inclusively!')
+
+            subtractor = EllipticCurve(xa, ya).multiply(private_key)
+            Pm = EllipticCurve(xb, yb).subtract(subtractor)
+
+            result.append(str(Pm))
+        print(result)
         return result
