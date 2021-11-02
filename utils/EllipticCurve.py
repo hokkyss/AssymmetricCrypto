@@ -1,5 +1,7 @@
+import json
 from typing import ClassVar, Dict, List, Tuple
-from random import randint
+from random import randint, random, shuffle
+from string import ascii_uppercase, ascii_lowercase, digits
 
 from .utils import StringEncoder, inverse_modulo, pow_mod
 
@@ -10,15 +12,13 @@ class EllipticCurve:
     __b: ClassVar[int] = 2971
     __p: ClassVar[int] = 2999
     __table: ClassVar[List[int]] = []
+    __encoding_table: ClassVar[Dict[str, Tuple[int, int]]] = {}
+    __decoding_table: ClassVar[Dict[str, str]] = {}
 
     def __init__(self, x: int, y: int) -> None:
         self.x = x
         self.y = y
         p = EllipticCurve.__p
-
-        if len(EllipticCurve.__table) == 0:
-            for i in range(p):
-                EllipticCurve.__table.append(pow_mod(i, 2, p))
 
     def multiply(self, k: int):
         if k < 0:
@@ -72,48 +72,6 @@ class EllipticCurve:
     def __str__(self) -> str:
         return f"{self.x},{self.y}"
 
-    @staticmethod
-    def encode(m: str) -> List[Tuple[int, int]]:
-        result: List[Tuple[int, int]] = []
-        table = EllipticCurve.__table
-        k = EllipticCurve.__k
-        taken: List[List[bool]] = [[False for _ in range(len(table))] for __ in range(len(table))]
-
-        encoding_map: Dict[str, Tuple[int, int]] = {}
-        for c in m:
-            try:
-                result.append(encoding_map[c])
-            except:
-                in_int = StringEncoder.encode(c)
-                p = EllipticCurve.__p
-                a = EllipticCurve.__a
-                b = EllipticCurve.__b
-
-                y: int = None
-                for x in range(in_int * k + 1, in_int * k + 1 + p):
-                    x = x % p
-                    kuadrat = (pow_mod(x, 3, p) + x * a + b) % p
-                    for i in range(p):
-                        if taken[x][i]:
-                            continue
-                        if table[i] == kuadrat:
-                            y = i
-                            break
-                    if y != None:
-                        taken[x][y] = True
-                        encoding_map[c] = (x, y)
-                        break
-                if not y:
-                    (x, y) = EllipticCurve.__INFINITY
-                result.append((x, y))
-        
-        print(result)
-        return result
-
-    @staticmethod
-    def decode(P: Tuple[int, int]) -> str:
-        return "A"
-
     def encrypt(self, m: List[Tuple[int, int]], public_key: Tuple[str, str]):
         """
         - `m` list of ECCPoints
@@ -148,6 +106,65 @@ class EllipticCurve:
             subtractor = EllipticCurve(xa, ya).multiply(private_key)
             Pm = EllipticCurve(xb, yb).subtract(subtractor)
 
-            result.append(str(Pm))
-        print(result)
+            result.append(EllipticCurve.__decode(str(Pm)))
+        return "".join(result)
+
+    @staticmethod
+    def encode(m: str) -> List[Tuple[int, int]]:
+        result: List[Tuple[int, int]] = []
+        table = EllipticCurve.__table
+        k = EllipticCurve.__k
+        p = EllipticCurve.__p
+        taken: List[List[bool]] = [[False for _ in range(p)] for __ in range(p)]
+
+        encoding_table = EllipticCurve.__encoding_table
+        decoding_table = EllipticCurve.__decoding_table
+        for c in m:
+            try:
+                result.append(encoding_table[c])
+            except:
+                in_int = StringEncoder.encode(c)
+                p = EllipticCurve.__p
+                a = EllipticCurve.__a
+                b = EllipticCurve.__b
+
+                y: int = None
+                for x in range(in_int * k + 1, in_int * k + 1 + p):
+                    x = x % p
+                    kuadrat = (pow_mod(x, 3, p) + x * a + b) % p
+                    for i in range(p):
+                        if taken[x][i]:
+                            continue
+                        if table[i] == kuadrat:
+                            y = i
+                            break
+
+                    if y != None:
+                        taken[x][y] = True
+                        encoding_table[c] = (x, y)
+                        decoding_table[str(EllipticCurve(x, y))] = c
+                        break
+                if not y:
+                    (x, y) = EllipticCurve.__INFINITY
+                result.append((x, y))
+
         return result
+
+    @staticmethod
+    def generate():
+        if len(EllipticCurve.__encoding_table.keys()) != 0: return
+
+        p = EllipticCurve.__p
+        table = EllipticCurve.__table
+
+        for i in range(p):
+            table.append(pow_mod(i, 2, p))
+
+        all_characters = list(ascii_lowercase + ascii_uppercase + digits + " ")
+        shuffle(all_characters)
+
+        EllipticCurve.encode(all_characters)
+
+    @staticmethod
+    def __decode(string: str) -> str:
+        return EllipticCurve.__decoding_table[string]
