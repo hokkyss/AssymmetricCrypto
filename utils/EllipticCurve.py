@@ -1,5 +1,5 @@
 from typing import ClassVar, Dict, List, Tuple
-from random import choice, randint, random, shuffle
+from random import choice, randint, shuffle
 from string import ascii_uppercase, ascii_lowercase, digits
 
 from .utils import PrimeGenerator, StringEncoder, inverse_modulo, pow_mod
@@ -102,7 +102,7 @@ class EllipticCurve:
     @staticmethod
     def check_validity(Bx: int, By: int, PbX: int, PbY: int):
         p = EllipticCurve.__p
-        if Bx >= 0 and Bx < p and By >= 0 and By < p and PbX >= 0 and PbX < p and PbY >= 0 and PbY < 0:
+        if Bx >= 0 and Bx < p and By >= 0 and By < p and PbX >= 0 and PbX < p and PbY >= 0 and PbY < p:
             pass
         else:
             raise ValueError(f'Each number must be between {0} and {p - 1}, inclusively!')
