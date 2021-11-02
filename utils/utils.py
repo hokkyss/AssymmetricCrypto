@@ -1,72 +1,98 @@
 import random
+from textwrap import wrap
 from typing import ClassVar, Dict, List
 
 class StringEncoder:
     __CHAR_MAP: ClassVar[Dict[str, str]] = {
-        "0": "00",
-        "1": "01",
-        "2": "02",
-        "3": "03",
-        "4": "04",
-        "5": "05",
-        "6": "06",
-        "7": "07",
-        "8": "08",
-        "9": "09",
-        "A": "10",
-        "B": "11",
-        "C": "12",
-        "D": "13",
-        "E": "14",
-        "F": "15",
-        "G": "16",
-        "H": "17",
-        "I": "18",
-        "J": "19",
-        "K": "20",
-        "L": "21",
-        "M": "22",
-        "N": "23",
-        "O": "24",
-        "P": "25",
-        "Q": "26",
-        "R": "27",
-        "S": "28",
-        "T": "29",
-        "U": "30",
-        "V": "31",
-        "W": "32",
-        "X": "33",
-        "Y": "34",
-        "Z": "35"
+        "0": 0,
+        "1": 1,
+        "2": 2,
+        "3": 3,
+        "4": 4,
+        "5": 5,
+        "6": 6,
+        "7": 7,
+        "8": 8,
+        "9": 9,
+        "A": 10,
+        "B": 11,
+        "C": 12,
+        "D": 13,
+        "E": 14,
+        "F": 15,
+        "G": 16,
+        "H": 17,
+        "I": 18,
+        "J": 19,
+        "K": 20,
+        "L": 21,
+        "M": 22,
+        "N": 23,
+        "O": 24,
+        "P": 25,
+        "Q": 26,
+        "R": 27,
+        "S": 28,
+        "T": 29,
+        "U": 30,
+        "V": 31,
+        "W": 32,
+        "X": 33,
+        "Y": 34,
+        "Z": 35,
+        "a": 36,
+        "b": 37,
+        "c": 38,
+        "d": 39,
+        "e": 40,
+        "f": 41,
+        "g": 42,
+        "h": 43,
+        "i": 44,
+        "j": 45,
+        "k": 46,
+        "l": 47,
+        "m": 48,
+        "n": 49,
+        "o": 50,
+        "p": 51,
+        "q": 52,
+        "r": 53,
+        "s": 54,
+        "t": 55,
+        "u": 56,
+        "v": 57,
+        "w": 58,
+        "x": 59,
+        "y": 60,
+        "z": 61
     }
 
     @staticmethod
-    def encode(string: str) -> str:
-        result = ""
-        for c in string:
-            result = result + StringEncoder.__CHAR_MAP[c]
-        return result
+    def encode(c: str) -> int:
+        assert len(c) == 1
+
+        return StringEncoder.__CHAR_MAP[c]
 
 class PrimeGenerator:
-    __PRIMES: List[int]
+    __PRIMES: ClassVar[List[int]]
 
-    def __init__(self) -> None:
-        self.__PRIMES = []
+    @staticmethod
+    def fill() -> None:
+        PrimeGenerator.__PRIMES = []
         prime = [True for _ in range(100000)]
         prime[1] = False
         for i in range(2, 100000):
             if prime[i]:
-                self.__PRIMES.append(i)
+                PrimeGenerator.__PRIMES.append(i)
             j = i * i
             while (j < 100000):
                 prime[j] = False
                 j += i
-        
-        print("SELESAI")
 
-    def random(self):
-        return random.choice(self.__PRIMES)
+    @staticmethod
+    def random():
+        return random.choice(PrimeGenerator.__PRIMES)
 
 def pow_mod(x: int, y: int, p: int) -> int:
     """
@@ -74,13 +100,15 @@ def pow_mod(x: int, y: int, p: int) -> int:
 
     x > 0
     """
-    assert x > 0
+    assert x >= 0
     x = x % p
 
+    if x == 0: return 0
     if y == 0: return 1
-    if y == 1: return x % p
+    if y == 1: return x
+
     temp: int = pow_mod(x, y // 2, p)
-    return (temp * temp * pow(x, y % 2)) % p
+    return (temp * temp * pow_mod(x, y % 2, p)) % p
 
 def gcd(a: int, b: int) -> int:
     if a == 0: return b
@@ -108,4 +136,14 @@ def inverse_modulo(a: int, m: int) -> int:
     # if u is negative, u becomes positive.
     return u % m
 
-PG = PrimeGenerator()
+def message_blocking(private: int, message: str, p: int) -> List[int]:
+    digits: int = len(str(private))
+    messages: List[int]
+    try:
+        messages = list(map(int, wrap(message, digits)))
+        for block in messages:
+            if (block >= p) or (block < 0):
+                raise ValueError
+    except:
+        messages = list(map(int, wrap(message, digits - 1)))
+    return messages

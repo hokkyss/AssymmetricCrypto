@@ -1,102 +1,147 @@
-from typing import ClassVar, List, Tuple
+from typing import ClassVar, Dict, List, Tuple
 from typing_extensions import Final, final
+import json
 from random import randint
 
-from .utils import inverse_modulo, pow_mod
- 
-@final
-class EllipticCurve:
-    __INFINITY: Final[ClassVar[Tuple[int, int]]] = (0, 10000000000000000000000000000000000000000000000000000000000000000)
+from .utils import StringEncoder, inverse_modulo, pow_mod
 
-    @staticmethod
-    def multiply(P: Tuple[int, int], k: int, p: int) -> Tuple[int, int]:
-        """
-        Count multiplication using divide and conquer algorithm
-        """
+class EllipticCurve:
+    __INFINITY: ClassVar[Tuple[int, int]] = (0, 10000000000000000000000000000000000000000000000000000000000000000)
+    __k: ClassVar[int] = 2957
+    __a: ClassVar[int] = 2969
+    __b: ClassVar[int] = 2971
+    __p: ClassVar[int] = 2999
+    __table: ClassVar[List[int]] = []
+
+    def __init__(self, x: int, y: int) -> None:
+        self.x = x
+        self.y = y
+        p = EllipticCurve.__p
+
+        if len(EllipticCurve.__table) == 0:
+            for i in range(p):
+                EllipticCurve.__table.append(pow_mod(i, 2, p))
+
+    def multiply(self, k: int):
         if k < 0:
-            (xR, yR) = EllipticCurve.multiply(P, -k, p)
-            return (xR, -yR)
+            (xR, yR) = self.multiply(-k)
+            return EllipticCurve(xR, -yR)
         if k == 0:
-            return EllipticCurve.__INFINITY
+            (xO, yO) = EllipticCurve.__INFINITY
+            return EllipticCurve(xO, yO)
         if k == 1:
-            return P
+            return self
         
         multiplier = k // 2
         remainder = k % 2
 
-        temp = EllipticCurve.multiply(P, multiplier, p)
-        return EllipticCurve.add(EllipticCurve.multiply(temp, 2, p), EllipticCurve.multiply(P, remainder, p), p)
+        temp = self.multiply(multiplier)
+        
+        return temp.add(temp).add(self.multiply(remainder))
 
-    @staticmethod
-    def add(P: Tuple[int, int], Q: Tuple[int, int], p: int) -> Tuple[int, int]:
-        (xP, yP) = P
-        (xQ, yQ) = Q
-        (_, yO) = EllipticCurve.__INFINITY
+    def add(self, other):
+        (xP, yP) = self.x, self.y
+
+        xQ: int; yQ: int
+        (xQ, yQ) = other.x, other.y
+        (xO, yO) = EllipticCurve.__INFINITY
+
+        p = EllipticCurve.__p
 
         if yP == yO:
-            return Q
+            return other
         if yQ == yO:
-            return P
+            return self
         if (xP == xQ) and (yP == -yQ):
-            return EllipticCurve.__INFINITY
-        
-        m = (((yP - yQ) % p) * inverse_modulo((xP - xQ), p)) % p
+            return EllipticCurve(xO, yO)
+        if (xP == xQ) and (yP == yQ):
+            m = inverse_modulo(2 * yP, p) * (3 * pow_mod(xP, 2, p) + EllipticCurve.__a) % p
+
+            xR = (pow_mod(m, 2, p) - (2 * xP)) % p
+            yR = (m * (xP - xR) - yP) % p
+            return EllipticCurve(xR, yR)
+
+        m = (((yP - yQ) % p) * inverse_modulo((xP - xQ) % p, p)) % p
 
         xR = (pow_mod(m, 2, p) - xP - xQ) % p
-        yR = ((m(xP - xR)) % p - yP) % p
-        
-        return (xR, yR)
+        yR = (((m * (xP - xR)) % p) - yP) % p
+
+        return EllipticCurve(xR, yR)
+    
+    def subtract(self, other):
+        return self.add(other.multiply(-1))
+
+    def __str__(self) -> str:
+        return f"{self.x},{self.y}"
     
     @staticmethod
-    def subtract(P: Tuple[int, int], Q: Tuple[int, int], p: int) -> Tuple[int, int]:
-        return EllipticCurve.add(P, EllipticCurve.multiply(Q, -1, p), p)
+    def encode(m: str) -> List[Tuple[int, int]]:
+        result: List[Tuple[int, int]] = []
+        table = EllipticCurve.__table
+        k = EllipticCurve.__k
+        taken: List[List[bool]] = [[False for _ in range(len(table))] for __ in range(len(table))]
+
+        encoding_map: Dict[str, Tuple[int, int]] = {}
+        for c in m:
+            try:
+                result.append(encoding_map[c])
+            except:
+                in_int = StringEncoder.encode(c)
+                p = EllipticCurve.__p
+                a = EllipticCurve.__a
+                b = EllipticCurve.__b
+
+                y: int = None
+                for x in range(in_int * k + 1, in_int * k + 1 + p):
+                    x = x % p
+                    kuadrat = (pow_mod(x, 3, p) + x * a + b) % p
+                    for i in range(p):
+                        if taken[x][i]:
+                            continue
+                        if table[i] == kuadrat:
+                            y = i
+                            break
+                    if y != None:
+                        taken[x][y] = True
+                        encoding_map[c] = (x, y)
+                        break
+                if not y:
+                    (x, y) = EllipticCurve.__INFINITY
+                result.append((x, y))
+        return result
     
     @staticmethod
-    def generate(a: int, b: int, p: int) -> List[Tuple[int, int]]:
+    def decode(P: Tuple[int, int]) -> str:
+        return "A"
+
+    def encrypt(self, m: List[Tuple[int, int]], public_key: Tuple[str, str]):
         """
-        Generate all points (x, y) on Elliptic Curve satisfying
-        y ** 2 = x ** 3 + ax + b
+        - `m` list of ECCPoints
+        - `p` is any prime number
+        - `public_key` is Pb
+        - `param` is (a, b) of the used elliptic curve for encoding
         """
-        assert ((4 * pow_mod(a, 3, p)) + (27 * pow_mod(b, 2, p))) % p != 0
+        result: List[Tuple[str, str]] = []
+        (xpub, ypub) = public_key
+        public = EllipticCurve(xpub, ypub)
 
-        results: List[Tuple[int, int]] = []
+        for Pm in m:
+            (x, y) = Pm
+            k = randint(1, EllipticCurve.__p - 1)
 
-        modulo_table: List[int] = []
-        for i in range(0, p, 1):
-            modulo_table.append((pow_mod(i, 3, p) + ((a * i) % p) + b) % p)
-        
-        pass
-
-    @staticmethod
-    def encode(m: int, p: int) -> Tuple[int, int]:
-        return (1, p)
+            Pc = (str(self.multiply(k)), str(EllipticCurve(x, y).add(public.multiply(k))))
+            result.append(Pc)
+        return result
     
     @staticmethod
-    def decode(P: Tuple[int, int], p: int) -> int:
-        return p
+    def decrypt(m: List[Tuple[Tuple[int, int], Tuple[int, int]]], private_key: int) -> List[int]:
+        result: List[int] = []
 
-def encrypt(m: List[int], B: Tuple[int, int], p: int, public_key: Tuple[int, int]) -> List[Tuple[int, int]]:
-    """
-    - `m` list of messages as integer each
-    - `B` is the base Elliptic Curve Point
-    - `p` is any prime number
-    - `public_key` is Pb
-    """
-    result: List[Tuple[Tuple[int, int], Tuple[int, int]]] = []
+        for (a, b) in m:
+            (xa, ya) = a
+            (xb, yb) = b
+            subtractor = EllipticCurve(xa, ya) * private_key
+            Pm = EllipticCurve(xb, yb) - subtractor
 
-    for block in m:
-        k = randint(1, p - 1)
-
-        Pm = EllipticCurve.encode(block)
-        Pc = (EllipticCurve.multiply(B, k, p), EllipticCurve.add(Pm, EllipticCurve.multiply(public_key, k, p), p))
-        result.append(Pc)
-
-def decrypt(m: List[Tuple[Tuple[int, int], Tuple[int, int]]], private_key: int, p: int) -> List[int]:
-    result: List[int] = []
-
-    for (a, b) in m:
-        subtractor = EllipticCurve.multiply(a, private_key, p)
-        Pm = EllipticCurve.subtract(b, subtractor, p)
-
-        result.append(EllipticCurve.decode(Pm, p))
-    return result
+            result.append(EllipticCurve.decode(Pm))
+        return result

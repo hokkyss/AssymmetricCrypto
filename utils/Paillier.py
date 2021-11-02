@@ -3,7 +3,7 @@
 from textwrap import wrap
 from typing import List
 
-from .utils import PG, lcm, inverse_modulo, pow_mod
+from .utils import PrimeGenerator, PrimeGenerator, lcm, inverse_modulo, pow_mod
 
 def L(x, n):
     return (x - 1) / n
@@ -28,8 +28,8 @@ def paillier_decryption(c: int, lamda: int, miu: int, n: int) -> int:
 
 # Generate paillier key
 def generate_paillier_key():
-    p = PG.random()
-    q = PG.random()
+    p = PrimeGenerator.random()
+    q = PrimeGenerator.random()
     n = p * q
     lamda = lcm(p - 1, q - 1)
     g = n + 1
@@ -40,13 +40,12 @@ def generate_paillier_key():
 
 # Main program to test
 if (__name__ == "__main__"):
-    PG = PrimeGenerator()
-    p = PG.random()
-    q = PG.random()
+    p = PrimeGenerator.random()
+    q = PrimeGenerator.random()
     n = p * q
     lamda = lcm(p - 1, q - 1)
 
-    g = n+1
+    g = n + 1
     print("Nilai p dan q\t\t:", p, ",", q)
     miu = get_miu(g, lamda, n)
     print("Public key\t\t:", g, ":", n)

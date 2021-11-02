@@ -1,7 +1,8 @@
+from typing_extensions import Literal
 from .RSA import *
 from .ElGamal import *
 from .Paillier import *
-# from .EllipticCurve import *
+from .EllipticCurve import *
 from .utils import *
 
 def generateKey(choice):
@@ -44,30 +45,77 @@ def clean(text: str) -> List[int]:
     int_arr = list(map(int, clean_text.split(",")))
     return int_arr
 
-def proceed(public_key, private_key, choice, mode, message):
-    print(choice)
-    print(mode)
+def proceed(public_key, private_key, choice: Literal['RSA', 'ElGamal', 'Paillier', 'Elliptic Curve Cryptography'], mode: Literal['Encryption', 'Decryption'], message: str):
+    if not choice:
+        raise ValueError('You must choose a Cryptography Algorithm.')
+    if not mode:
+        raise ValueError('You must either encrypt or decrypt')
+
     if (mode == "Encryption"):
         if (choice == "RSA"):
-            public_key_arr = clean(public_key)
-            e, n = public_key_arr[0], public_key_arr[1]
-            return rsa_encryption(message, n, e)
-        
+            try:
+                public_key_arr = clean(public_key)
+                e, n = public_key_arr[0], public_key_arr[1]
+                return rsa_encryption(message, n, e)
+            except:
+                raise ValueError('Public key format: <e>, <n>')
         if (choice == "Paillier"):
-            public_key_arr = clean(public_key)
-            g, n = public_key_arr[0], public_key_arr[1]
-            return paillier_encryption(int(message), g, n)
+            try:
+                public_key_arr = clean(public_key)
+                g, n = public_key_arr[0], public_key_arr[1]
+                return paillier_encryption(int(message), g, n)
+            except:
+                raise ValueError('Public key format: <g>, <n>')
+        if (choice == "ElGamal"):
+            try:
+                public_key_arr = clean(public_key)
+                [p, g, y] = public_key_arr
 
+                message_block = message_blocking(p, message, p)
+                return ElGamal.encrypt(message_block, (p, g, y))
+            except:
+                raise ValueError('Public key format: <p>, <g>, <y>')
+        if (choice == "Elliptic Curve Cryptography"):
+            try:
+                public_key_arr = clean(public_key)
+
+                [Bx, By, PbX, PbY] = public_key_arr
+
+                B = EllipticCurve(Bx, By)
+                mess = EllipticCurve.encode(message)
+
+                return B.encrypt(mess, (PbX, PbY))
+            except:
+                raise ValueError('Public key format: <B.x>, <B.y>, <Pb.x>, <Pb.y>')
     if (mode == "Decryption"):
         if (choice == "RSA"):
-            private_key_arr = clean(private_key)
-            d, n = private_key_arr[0], private_key_arr[1]
-            return rsa_decryption(message, n, d)
-        
+            try:
+                private_key_arr = clean(private_key)
+                d, n = private_key_arr[0], private_key_arr[1]
+                return rsa_decryption(message, n, d)
+            except:
+                raise ValueError('Private key format: <d>, <n>')    
         if (choice == "Paillier"):
-            private_key_arr = clean(private_key)
-            lamda, miu, n = private_key_arr[0], private_key_arr[1], private_key_arr[2]
-            return paillier_decryption(int(message), lamda, miu, n)
+            try:
+                private_key_arr = clean(private_key)
+                lamda, miu, n = private_key_arr[0], private_key_arr[1], private_key_arr[2]
+                return paillier_decryption(int(message), lamda, miu, n) 
+            except:
+                raise ValueError('Private key format: <λ>, <µ>, <n>')
+        if (choice == "ElGamal"):
+            try:
+                public_key_arr = clean(public_key)
+                [p, g, y] = public_key_arr
 
-        
+                message_block = message_blocking(p, message, p)
+                return ElGamal.encrypt(message_block, (p, g, y))
+            except:
+                raise ValueError('Public key format: <p>, <g>, <y>')
+        if (choice == "Elliptic Curve Cryptography"):
+            try:
+                public_key_arr = clean(public_key)
 
+                [Bx, By, PbX, PbY] = public_key_arr
+                return EllipticCurve.encrypt(message, (Bx, By), (PbX, PbY))
+            except:
+                raise ValueError('Public key format: <B.x>, <B.y>, <p>, <Pb.x>, <Pb.y>, <a>, <b>')

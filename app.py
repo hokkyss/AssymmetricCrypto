@@ -5,10 +5,12 @@ from typing import Dict, Union
 
 from utils.main import generateKey, proceed
 from utils.utils import PrimeGenerator
-from flask import Flask, json, render_template, request
+from flask import Flask, render_template, request
 
 DEV = os.getenv("FLASK_ENV", "development")
 app = Flask(__name__)
+
+PrimeGenerator.fill()
 
 @app.route("/upload_public_key", methods=["POST"])
 def upload_public_key():
@@ -49,20 +51,21 @@ def encryption():
 
 @app.route("/count", methods=["POST"])
 def count():
-    result: Dict[str, Union[str, int, None]] = {}
-    if request.method == "POST":
+    result: Dict[str, str] = { "result": "", "error": None }
+    try:
         public_key = request.json.get("public-key")
         private_key = request.json.get("private-key")
         choice = request.json.get("choice")
         mode = request.json.get("mode")
         input_box = request.json.get("input-box")
         result_box = proceed(public_key, private_key, choice, mode, input_box)
-    else:
-        result_box = ""
 
-    if not result_box: result_box = ""
+        if not result_box: result_box = ""
+        result["result"] = result_box
+    except ValueError as e:
+        result["error"] = str(e)
 
-    return result_box
+    return result
 
 if __name__ == '__main__':
     app.run(debug=DEV)

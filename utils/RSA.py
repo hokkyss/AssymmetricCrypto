@@ -4,7 +4,7 @@ import random
 from textwrap import wrap
 from typing import List
 
-from .utils import PG, pow_mod, inverse_modulo
+from .utils import PrimeGenerator, pow_mod, inverse_modulo
 
 def text_to_block(text: str, block_size: int) -> List[int]:
     text_length = len(text)
@@ -46,11 +46,11 @@ def rsa_decryption(ciphertext: str, n: int, d: int) -> str:
 
 # Generate rsa key
 def generate_rsa_key():
-    p = PG.random()
-    q = PG.random()
+    p = PrimeGenerator.random()
+    q = PrimeGenerator.random()
     n = p * q
     toi = (p - 1) * (q - 1)
-    e = PG.random()
+    e = PrimeGenerator.random()
     d = inverse_modulo(e, toi)
     public_key = [e, n]
     private_key = [d, n]
@@ -60,11 +60,11 @@ def generate_rsa_key():
 if (__name__ == "__main__"):
     # p = int(input("Nilai p: "))
     # q = int(input("Nilai q: "))
-    p = PG.random()
-    q = PG.random()
+    p = PrimeGenerator.random()
+    q = PrimeGenerator.random()
     n = p * q
     toi = (p - 1) * (q - 1)
-    e = PG.random()
+    e = PrimeGenerator.random()
 
     # e = int(input("Nilai e: "))
     d = inverse_modulo(e, toi)
