@@ -18,7 +18,7 @@ def clean(text: str) -> List[int]:
     return int_arr
 
 # Generate the key based on user choice
-def generateKey(choice):
+def generateKey(choice: Literal['RSA', 'ElGamal', 'Paillier', 'ECC']):
     all_keys = None
     filename = ""
     id = random.randint(0, 1000)
@@ -35,11 +35,12 @@ def generateKey(choice):
         all_keys = generate_paillier_key()
         filename = "paillier-" + str(id)
 
-    elif (choice == "ECC"):
+    elif (choice == "Elliptic Curve Cryptography"):
         # TO DO LIST HOKKI
-        all_keys = [[],[]]
+        all_keys = EllipticCurve.generate_key()
         filename = "ecc-" + str(id)
 
+    print(all_keys)
     public_key = ','.join(list(map(str, all_keys[0])))
     private_key = ','.join(list(map(str, all_keys[1])))
     full_path = "keys/" + filename
@@ -143,14 +144,9 @@ def proceed(public_key, private_key, choice: Literal['RSA', 'ElGamal', 'Paillier
         if (choice == "Elliptic Curve Cryptography"):
             private_key_arr = clean(private_key)
 
-            if len(private_key_arr) != 1:
-                raise ValueError('Private key format: <b>')
-            [b] = private_key_arr
-
-            public_key_arr = clean(public_key)
-            if len(public_key_arr) != 2:
-                raise ValueError('Public key format: <B.x>, <B.y>')
-            [x, y] = public_key_arr
+            if len(private_key_arr) != 3:
+                raise ValueError('Private key format: <b>, <B.x>, <B.y>')
+            [b, x, y] = private_key_arr
             B = EllipticCurve(x, y)
 
             if len(clean(message)) % 4 != 0:
