@@ -1,7 +1,7 @@
 import random
 from textwrap import wrap
 import numpy as np
-from typing import ClassVar, Dict, List
+from typing import ClassVar, Dict, List, Tuple
 
 class StringEncoder:
     __CHAR_MAP: ClassVar[Dict[str, str]] = {
@@ -144,7 +144,7 @@ def inverse_modulo(a: int, m: int) -> int:
     # if u is negative, u becomes positive.
     return u % m
 
-def message_blocking(private: int, message: str, p: int) -> List[int]:
+def message_blocking(private: int, message: str, p: int) -> Tuple[List[int], int]:
     digits: int = len(str(private))
     messages: List[int]
     try:
@@ -154,4 +154,5 @@ def message_blocking(private: int, message: str, p: int) -> List[int]:
                 raise ValueError
     except:
         messages = list(map(int, wrap(message, digits - 1)))
-    return messages
+        return messages, digits - 1
+    return messages, digits

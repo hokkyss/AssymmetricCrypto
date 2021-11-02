@@ -13,9 +13,10 @@ class ElGamal:
 
         result: List[Tuple[int, int]] = []
         for block in m:
-            a = (g ** k) % p
-            b = ((y ** k) * block) % p
+            a = pow_mod(g, k, p)
+            b = (pow_mod(y, k, p) * block) % p
             result.append((a, b))
+
         return result
 
     @staticmethod
@@ -57,7 +58,7 @@ if __name__ == "__main__":
     # private key = x
 
     m = input("message to be encrypted = ")
-    m = message_blocking(x, m, p)
+    (m, ) = message_blocking(x, m, p)
 
     encrypted = ElGamal.encrypt(m, public_key=(p, g, y))
     print(encrypted)

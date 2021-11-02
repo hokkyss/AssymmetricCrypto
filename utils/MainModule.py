@@ -75,17 +75,20 @@ def proceed(public_key, private_key, choice: Literal['RSA', 'ElGamal', 'Paillier
             if ((m > n) or (m < 0)):
                 raise ValueError('Message must be between 0 and n')
             return paillier_encryption(m, g, n)
-
         if (choice == "ElGamal"):
             public_key_arr = clean(public_key)
-            
+
             if len(public_key_arr) != 3:
                 raise ValueError('Public key format: <p>, <g>, <y>')
             [p, g, y] = public_key_arr
 
-            message_block = message_blocking(p, message, p)
-            return ElGamal.encrypt(message_block, (p, g, y))
-            
+            (message_block, digit) = message_blocking(p, message, p)
+
+            result = ElGamal.encrypt(message_block, (p, g, y))
+            string_array: List[str] = []
+            for (g_k, y_k_block) in result:
+                string_array.append(str(g_k).zfill(digit) + str(y_k_block).zfill(digit))
+            return "".join(string_array)
         if (choice == "Elliptic Curve Cryptography"):
             public_key_arr = clean(public_key)
 
@@ -98,7 +101,6 @@ def proceed(public_key, private_key, choice: Literal['RSA', 'ElGamal', 'Paillier
             mess = EllipticCurve.encode(message)
 
             return B.encrypt(mess, (PbX, PbY))
-
     if (mode == "Decryption"):
         if not private_key:
             raise ValueError('Private key must not be empty')
@@ -110,7 +112,6 @@ def proceed(public_key, private_key, choice: Literal['RSA', 'ElGamal', 'Paillier
 
             d, n = private_key_arr[0], private_key_arr[1]
             return rsa_decryption(message, n, d)
-            
         if (choice == "Paillier"):
             private_key_arr = clean(private_key)
 
@@ -122,7 +123,6 @@ def proceed(public_key, private_key, choice: Literal['RSA', 'ElGamal', 'Paillier
             if ((m > n * n) or (m < 0)):
                 raise ValueError('Ciphertext must be between 0 and n^2')
             return paillier_decryption(int(message), lamda, miu, n)
-
         if (choice == "ElGamal"):
             private_key_arr = clean(private_key)
             
@@ -131,8 +131,15 @@ def proceed(public_key, private_key, choice: Literal['RSA', 'ElGamal', 'Paillier
 
             [p, x] = private_key_arr
 
-            message_block = message_blocking(p, message, p)
-            return ElGamal.decrypt(message_block, (p, x))
+            (message_block, digits) = message_blocking(p, message, p)
+
+            parsed_message: List[Tuple[int, int]] = []
+            for i in range(0, len(message_block), 2):
+                parsed_message.append((message_block[i], message_block[i + 1]))
+            
+            decrypted = ElGamal.decrypt(parsed_message, (p, x))
+
+            return "".join(list(map(str, decrypted)))
         if (choice == "Elliptic Curve Cryptography"):
             private_key_arr = clean(private_key)
 
