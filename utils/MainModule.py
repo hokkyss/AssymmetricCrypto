@@ -28,7 +28,7 @@ def generateKey(choice: Literal['RSA', 'ElGamal', 'Paillier', 'ECC']):
 
     elif (choice == "ElGamal"):
         # TO DO LIST HOKKI
-        all_keys = [[],[]]
+        all_keys = ElGamal.generate_key()
         filename = "elgamal-" + str(id)
 
     elif (choice == "Paillier"):
