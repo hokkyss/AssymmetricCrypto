@@ -1,5 +1,6 @@
 import random
 from textwrap import wrap
+import numpy as np
 from typing import ClassVar, Dict, List
 
 class StringEncoder:
@@ -80,19 +81,23 @@ class PrimeGenerator:
     @staticmethod
     def fill() -> None:
         PrimeGenerator.__PRIMES = []
-        prime = [True for _ in range(100000)]
-        prime[1] = False
-        for i in range(2, 100000):
+        n = 10000000
+        prime = [True] * n
+        for i in range(3, int(n**0.5)+ 1 , 2):
             if prime[i]:
-                PrimeGenerator.__PRIMES.append(i)
-            j = i * i
-            while (j < 100000):
-                prime[j] = False
-                j += i
+                prime[i * i: : 2 * i] = [False]*((n - i * i - 1) // (2 * i) + 1)
 
-    @staticmethod
-    def random():
-        return random.choice(PrimeGenerator.__PRIMES)
+        PrimeGenerator.__PRIMES = [2] + [i for i in range(3, n, 2) if prime[i]]
+
+    def random(self):
+        return random.choice(self.__PRIMES)
+    
+    def random_below(self, n):
+        filtered_prime = [x for x in self.__PRIMES if x <= n]
+        selected_prime = random.choice(filtered_prime)
+        while (gcd(selected_prime, n) != 1):
+            selected_prime = random.choice(filtered_prime)
+        return selected_prime
 
 def pow_mod(x: int, y: int, p: int) -> int:
     """

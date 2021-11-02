@@ -5,6 +5,19 @@ from .Paillier import *
 from .EllipticCurve import *
 from .utils import *
 
+# Read the file and return the content of the file
+def readFile(filename: str) -> str:
+    f = open("keys/" + filename, "r")
+    output_text = f.read()
+    return output_text
+
+# Clean the key into list of value contain in key
+def clean(text: str) -> List[int]:
+    clean_text = text.replace(" ", "")
+    int_arr = list(map(int, clean_text.split(",")))
+    return int_arr
+
+# Generate the key based on user choice
 def generateKey(choice):
     print(choice)
     all_keys = None
@@ -15,6 +28,7 @@ def generateKey(choice):
         filename = "rsa-" + str(id)
 
     elif (choice == "ElGamal"):
+        # TO DO LIST HOKKI
         all_keys = [[],[]]
         filename = "elgamal-" + str(id)
 
@@ -23,27 +37,27 @@ def generateKey(choice):
         filename = "paillier-" + str(id)
 
     elif (choice == "ECC"):
+        # TO DO LIST HOKKI
         all_keys = [[],[]]
         filename = "ecc-" + str(id)
 
-    public_key = list(map(str, all_keys[0]))
-    private_key = list(map(str, all_keys[1]))
-    path = "keys/"
+    public_key = ','.join(list(map(str, all_keys[0])))
+    private_key = ','.join(list(map(str, all_keys[1])))
+    full_path = "keys/" + filename
     
-    f = open(path + filename + ".pub", 'w')
-    f.write(','.join(public_key))
+    f = open(full_path + ".pub", 'w')
+    f.write(public_key)
     f.close()
 
-    f = open(path + filename + ".pri", 'w')
-    f.write(','.join(private_key))
+    f = open(full_path + ".pri", 'w')
+    f.write(private_key)
     f.close()
 
-    return all_keys, path + filename
+    notification = "\nGenerate key success! Saved on " + full_path
+    notification += "\nPublic key : " + public_key
+    notification += "\nPrivate key : " + private_key
+    return notification
 
-def clean(text: str) -> List[int]:
-    clean_text = text.replace(" ", "")
-    int_arr = list(map(int, clean_text.split(",")))
-    return int_arr
 
 def proceed(public_key, private_key, choice: Literal['RSA', 'ElGamal', 'Paillier', 'Elliptic Curve Cryptography'], mode: Literal['Encryption', 'Decryption'], message: str):
     if not choice:

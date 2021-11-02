@@ -2,7 +2,7 @@
 {% block content %}
   <article class="media content-section">
       <div class="media-body">
-      <h2><a class="article-title" href="#">Asymmetric Encryption</a></h2>
+      <h2><label class="article-title">Asymmetric Encryption</label></h2>
         <p class="article-content">
           <form id="cryptography" name="cryptography">
             <div class="key-container">
@@ -43,11 +43,11 @@
             </div>
             <div>
                 <label><b>Input Box</b></label><br>
-                <textarea name="input-box" rows=5 class="text-area-box"></textarea><br><br>
+                <textarea name="input-box" rows=3 class="text-area-box"></textarea><br><br>
             </div>
             <div>
                 <label><b>Result Box</b></label><br>
-                <textarea id="output" name="result-box" rows=5 class="text-area-box"></textarea><br><br>
+                <textarea id="output" name="result-box" rows=3 class="text-area-box"></textarea><br><br>
             </div>
             <button id="submit">Execute</button><br>
           </form>
@@ -60,9 +60,9 @@
         crossorigin="anonymous"></script>
 
     <script type="text/javascript">
-    const countResult = function(){
+    const execute = function(){
         const xhr = new XMLHttpRequest();
-        xhr.open("POST", "{{ url_for('count') }}");
+        xhr.open("POST", "{{ url_for('execute') }}");
         xhr.setRequestHeader("Content-Type", "application/json")
         xhr.responseType = "json"
         xhr.send(JSON.stringify({
@@ -125,7 +125,7 @@
     $('#submit').on('click', function(e){
         e.preventDefault();
         e.stopPropagation();
-        countResult()
+        execute()
     })
     </script>
 {% endblock content %}
