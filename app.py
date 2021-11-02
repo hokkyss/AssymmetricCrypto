@@ -3,6 +3,7 @@
 import os
 from typing import Dict, Union
 
+from utils.EllipticCurve import EllipticCurve
 from utils.MainModule import generateKey, proceed, readFile
 from utils.utils import PrimeGenerator
 from flask import Flask, render_template, request
@@ -11,6 +12,7 @@ DEV = os.getenv("FLASK_ENV", "development")
 app = Flask(__name__)
 
 PrimeGenerator.fill()
+EllipticCurve.generate()
 
 @app.route("/upload_public_key", methods=["POST"])
 def upload_public_key():

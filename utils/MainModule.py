@@ -19,7 +19,6 @@ def clean(text: str) -> List[int]:
 
 # Generate the key based on user choice
 def generateKey(choice):
-    print(choice)
     all_keys = None
     filename = ""
     id = random.randint(0, 1000)
@@ -142,8 +141,6 @@ def proceed(public_key, private_key, choice: Literal['RSA', 'ElGamal', 'Paillier
                 raise ValueError('Public key format: <B.x>, <B.y>')
             [x, y] = public_key_arr
             B = EllipticCurve(x, y)
-            print(B)
-            print(B.multiply(-1))
 
             if len(clean(message)) % 4 != 0:
                 raise ValueError('Number of integers must be dividable by 4!')
