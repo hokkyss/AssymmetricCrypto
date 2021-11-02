@@ -1,6 +1,5 @@
 import random
 from textwrap import wrap
-from utils.EllipticCurve import EllipticCurve
 import numpy as np
 from typing import ClassVar, Dict, List
 
@@ -93,11 +92,11 @@ class PrimeGenerator:
 
     @staticmethod
     def random():
-        return random.choice(EllipticCurve.__PRIMES)
+        return random.choice(PrimeGenerator.__PRIMES)
     
     @staticmethod
     def random_below(n):
-        filtered_prime = [x for x in EllipticCurve.__PRIMES if x <= n]
+        filtered_prime = [x for x in PrimeGenerator.__PRIMES if x <= n]
         selected_prime = random.choice(filtered_prime)
         while (gcd(selected_prime, n) != 1):
             selected_prime = random.choice(filtered_prime)
